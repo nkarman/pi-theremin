@@ -7,14 +7,14 @@
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
-                               public Slider::Listener,
-                               public TextButton::Listener
-                                
+                               public Slider::Listener
+                               //public TextButton::Listener,
+
 {
 public:
     MainContentComponent()
     {
-        
+        addAndMakeVisible(MainGUI);
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         // specify a UDP port to connect to with OSCReceiver
@@ -25,47 +25,6 @@ public:
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         
-        addAndMakeVisible (sineWaveButton = new TextButton ("Sine Wave"));
-        sineWaveButton->addListener (this);
-        
-        addAndMakeVisible (squareWaveButton = new TextButton ("Square Wave"));
-        squareWaveButton->addListener (this);
-        
-        addAndMakeVisible (triangleWaveButton = new TextButton ("Triangle Wave"));
-        triangleWaveButton->addListener (this);
-        
-        addAndMakeVisible (note = new Label ("note",
-                                             TRANS("Notes")));
-        note->setFont (Font (23.50f, Font::plain).withTypefaceStyle ("Regular"));
-        note->setJustificationType (Justification::centred);
-        note->setEditable (false, false, false);
-        note->setColour (Label::backgroundColourId, Colours::blueviolet);
-        note->setColour (TextEditor::textColourId, Colours::black);
-        note->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-        
-        addAndMakeVisible (sensorReading = new Label ("sensorReading",
-                                                      TRANS("sensor reading\n")));
-        sensorReading->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-        sensorReading->setJustificationType (Justification::centredLeft);
-        sensorReading->setEditable (false, false, false);
-        sensorReading->setColour (TextEditor::textColourId, Colours::black);
-        sensorReading->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-        
-        addAndMakeVisible (plusOctave = new TextButton ("plusOctave"));
-        plusOctave->setButtonText (TRANS("+"));
-        plusOctave->addListener (this);
-        
-        addAndMakeVisible (octave = new Label ("octave",
-                                               TRANS("octave #")));
-        octave->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-        octave->setJustificationType (Justification::centredLeft);
-        octave->setEditable (false, false, false);
-        octave->setColour (TextEditor::textColourId, Colours::black);
-        octave->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-        
-        addAndMakeVisible (minusOctave = new TextButton ("minusOctave"));
-        minusOctave->setButtonText (TRANS("-"));
-        minusOctave->addListener (this);
         
         setSize (1100, 800);
         
@@ -111,9 +70,6 @@ public:
 
     ~MainContentComponent()
     {
-        sineWaveButton = nullptr;
-        squareWaveButton = nullptr;
-        triangleWaveButton = nullptr;
         note = nullptr;
         sensorReading = nullptr;
         plusOctave = nullptr;
@@ -123,36 +79,6 @@ public:
     }
 
     //==============================================================================
-    
-    void buttonClicked (Button* buttonThatWasClicked) override
-    {
-
-        
-        if (buttonThatWasClicked == sineWaveButton)
-        {
-            currentWave = waves[0];
-            std::cout << currentWave << std::endl;
-        }
-        else if (buttonThatWasClicked == squareWaveButton)
-        {
-            currentWave = waves[1];
-            std::cout << currentWave << std::endl;
-        }
-        else if (buttonThatWasClicked == triangleWaveButton)
-        {
-            currentWave = waves[2];
-            std::cout << currentWave << std::endl;
-        }
-        else if (buttonThatWasClicked == plusOctave)
-        {
-
-        }
-        else if (buttonThatWasClicked == minusOctave)
-        {
-
-        }
-        
-    }
     
     void sliderValueChanged(Slider *slider) override
     {
@@ -185,7 +111,7 @@ public:
         
         
         String message;
-        message << "Preparing to play audio..." + currentWave << newLine;
+        message << "Preparing to play audio..." + MainGUI.currentWave << newLine;
         message << " samplesPerBlockExpected = " << samplesPerBlockExpected << newLine;
         message << " sampleRate = " << thisSampleRate;
         Logger::getCurrentLogger()->writeToLog (message);
@@ -211,7 +137,7 @@ public:
             sinTime = 0.0;
         }
         
-        if (currentWave == "sine") {
+        if (MainGUI.currentWave == "sine") {
             // generate sin wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
                 phaseAngle += phaseAngleChange;
@@ -223,7 +149,7 @@ public:
                 sinTime += sinDeltaTime;
             }
             
-        } else if (currentWave == "square") {
+        } else if (MainGUI.currentWave == "square") {
             // generate square wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
                 phaseAngle += phaseAngleChange;
@@ -235,7 +161,7 @@ public:
                 monoBuffer[sample] = value;
                 sinTime += sinDeltaTime;
             }
-        } else if (currentWave == "triange") {
+        } else if (MainGUI.currentWave == "triange") {
             
         }
 
@@ -264,6 +190,7 @@ public:
     }
 
     //==============================================================================
+    /*
     void paint (Graphics& g) override
     {
         // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -272,7 +199,7 @@ public:
 
         // You can add your drawing code here!
     }
-
+    
     void resized() override
     {
         freqSlider.setBounds(50, 250, getWidth() - 60, 20);
@@ -285,7 +212,7 @@ public:
         octave->setBounds (32, 264, 55, 24);
         minusOctave->setBounds (0, 264, 31, 24);
     }
-
+     */
 
 private:
     Slider volumeSlider;
@@ -296,9 +223,6 @@ private:
     Label phaseLabel;
     MainGUI MainGUI;
     
-    ScopedPointer<TextButton> sineWaveButton;
-    ScopedPointer<TextButton> squareWaveButton;
-    ScopedPointer<TextButton> triangleWaveButton;
     ScopedPointer<Label> note;
     ScopedPointer<Label> sensorReading;
     ScopedPointer<TextButton> plusOctave;
@@ -307,8 +231,6 @@ private:
     
     TextButton m_muteButton;
     bool m_mute;
-    String waves [3] = { "sine", "square", "triange" };
-    String currentWave = waves[1];
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {

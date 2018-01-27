@@ -22,6 +22,7 @@
 
 #include "MainGUI.h"
 
+String MainGUI::currentWave;
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
@@ -31,17 +32,24 @@ MainGUI::MainGUI ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
-
+    waves[0] = { "sine"};
+    waves[1] = {"square"};
+    waves[2] = {"triangle"};
+    currentWave = waves[1];
+    
     addAndMakeVisible (sineWaveButton = new TextButton ("sineWaveButton"));
     sineWaveButton->setButtonText (TRANS("Sine Wave"));
     sineWaveButton->addListener (this);
+    sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
 
     addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
     squareWaveButton->setButtonText (TRANS("Square Wave"));
+    squareWaveButton->addListener (this);
+    squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
 
     addAndMakeVisible (triangleWaveButton = new TextButton ("triangleWaveButton"));
     triangleWaveButton->setButtonText (TRANS("Triangle Wave"));
-    triangleWaveButton->addListener (this);
+    triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
 
     addAndMakeVisible (note = new Label ("note",
                                          TRANS("Notes")));
@@ -114,33 +122,6 @@ void MainGUI::paint (Graphics& g)
 
     g.fillAll (Colour (0xff323e44));
 
-    {
-        int x = 20, y = 140, width = 624, height = 11;
-        Colour fillColour = Colour (0xff2aa547);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 188, y = 156, width = 12, height = 408;
-        Colour fillColour = Colour (0xff2a38a5);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 460, y = 156, width = 12, height = 412;
-        Colour fillColour = Colour (0xff2a38a5);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -149,17 +130,15 @@ void MainGUI::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
-
-    sineWaveButton->setBounds (16, 16, 160, 104);
-    squareWaveButton->setBounds (240, 16, 176, 104);
-    triangleWaveButton->setBounds (472, 16, 174, 104);
-    note->setBounds (40, 184, 88, 64);
-    sensorReading->setBounds (16, 320, 150, 24);
-    plusOctave->setBounds (136, 504, 31, 24);
-    octave->setBounds (72, 504, 55, 24);
-    minusOctave->setBounds (32, 504, 31, 24);
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
+    //freqSlider.setBounds(50, 250, getWidth() - 60, 20);
+    sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
+    squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
+    triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
+    note->setBounds (16, 136, 88, 64);
+    sensorReading->setBounds (8, 208, 150, 24);
+    plusOctave->setBounds (88, 264, 31, 24);
+    octave->setBounds (32, 264, 55, 24);
+    minusOctave->setBounds (0, 264, 31, 24);
 }
 
 void MainGUI::buttonClicked (Button* buttonThatWasClicked)
@@ -171,11 +150,13 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_sineWaveButton] -- add your button handler code here..
         //[/UserButtonCode_sineWaveButton]
+        currentWave = waves[0];
     }
-    else if (buttonThatWasClicked == triangleWaveButton)
+    else if (buttonThatWasClicked == squareWaveButton)
     {
         //[UserButtonCode_triangleWaveButton] -- add your button handler code here..
         //[/UserButtonCode_triangleWaveButton]
+        currentWave = waves[1];
     }
     else if (buttonThatWasClicked == plusOctave)
     {
