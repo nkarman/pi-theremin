@@ -24,7 +24,7 @@
 		24B79368B238939E60858ED1 = {isa = PBXBuildFile; fileRef = DEDE8B634BB4093A86CB7EFA; };
 		709CB9B6E6CA7DAC2245B853 = {isa = PBXBuildFile; fileRef = ED6B8408AADF86306EE34BC6; };
 		A76EA922F06E2C69EFFC37DB = {isa = PBXBuildFile; fileRef = D33DC921CE1AE913DB2C3847; };
-		EE8408B72A66E3BE647721F1 = {isa = PBXBuildFile; fileRef = 1F51621F224166AB555B49AD; };
+		1F8EB34FA1930725EE7F7201 = {isa = PBXBuildFile; fileRef = 20BACA9626428022B4DE48D3; };
 		3A95DEE4942B55E51C0DA66A = {isa = PBXBuildFile; fileRef = 9C5948B45D449C9CF54E6800; };
 		6BDC13B26726B36EE3633D22 = {isa = PBXBuildFile; fileRef = 79CC2F72A3A24D2486B19D48; };
 		B6AEDB5312E0D80F7CF06704 = {isa = PBXBuildFile; fileRef = 68620DDE912C6BEDF0462AFA; };
@@ -45,8 +45,7 @@
 		0B56616C1C623A66CE8D7E0C = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		0ECA21BDDF8F9A36F7941408 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = "SOURCE_ROOT"; };
 		187C6E9A29090882DFD8A27F = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_processors"; path = "~/JUCE/modules/juce_audio_processors"; sourceTree = "<absolute>"; };
-		1F51621F224166AB555B49AD = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NoteLabel.cpp; path = ../../Source/NoteLabel.cpp; sourceTree = "SOURCE_ROOT"; };
-		203784C8ADF80C9FBBFF4B7E = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoteLabel.h; path = ../../Source/NoteLabel.h; sourceTree = "SOURCE_ROOT"; };
+		20BACA9626428022B4DE48D3 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SineComponent.cpp; path = ../../Source/SineComponent.cpp; sourceTree = "SOURCE_ROOT"; };
 		21CD982BED0A1E73B17BC0EC = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		29069AF84440AF26205386E9 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		295F88772FE5C5660E01903A = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -62,6 +61,7 @@
 		68620DDE912C6BEDF0462AFA = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_formats.mm"; path = "../../JuceLibraryCode/include_juce_audio_formats.mm"; sourceTree = "SOURCE_ROOT"; };
 		6CC906DC937A599A05B593FD = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_events"; path = "~/JUCE/modules/juce_events"; sourceTree = "<absolute>"; };
 		79CC2F72A3A24D2486B19D48 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_devices.mm"; path = "../../JuceLibraryCode/include_juce_audio_devices.mm"; sourceTree = "SOURCE_ROOT"; };
+		7ED4C7630C06849A5B7E7386 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SineComponent.h; path = ../../Source/SineComponent.h; sourceTree = "SOURCE_ROOT"; };
 		83C05C3FC4D1B86C29C22B0E = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		85FCFB25C6F410B01081A521 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_audio_utils"; path = "~/JUCE/modules/juce_audio_utils"; sourceTree = "<absolute>"; };
 		89DCB06A31010DFB50917531 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_core.mm"; path = "../../JuceLibraryCode/include_juce_core.mm"; sourceTree = "SOURCE_ROOT"; };
@@ -98,8 +98,8 @@
 					D33DC921CE1AE913DB2C3847, ); name = Source; sourceTree = "<group>"; };
 		063162D450076E3BB2FDDFE3 = {isa = PBXGroup; children = (
 					FF23067496EBC43395A49BBA,
-					1F51621F224166AB555B49AD,
-					203784C8ADF80C9FBBFF4B7E, ); name = "pi-theremin"; sourceTree = "<group>"; };
+					20BACA9626428022B4DE48D3,
+					7ED4C7630C06849A5B7E7386, ); name = "pi-theremin"; sourceTree = "<group>"; };
 		A1A876D14E2B3FBC2C45918A = {isa = PBXGroup; children = (
 					EC0D21470CA55F6F0074A238,
 					6522A7E7B4E7AE04E97D1B2A,
@@ -311,7 +311,7 @@
 		9FAB2C7C898354F730DAB90B = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
 					709CB9B6E6CA7DAC2245B853,
 					A76EA922F06E2C69EFFC37DB,
-					EE8408B72A66E3BE647721F1,
+					1F8EB34FA1930725EE7F7201,
 					3A95DEE4942B55E51C0DA66A,
 					6BDC13B26726B36EE3633D22,
 					B6AEDB5312E0D80F7CF06704,
