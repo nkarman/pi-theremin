@@ -10,6 +10,8 @@
             file="Source/MainComponent.cpp"/>
       <FILE id="ZDEyGF" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
+    <FILE id="IXR2Ss" name="MainGUI.cpp" compile="1" resource="0" file="Source/MainGUI.cpp"/>
+    <FILE id="uYDFlQ" name="MainGUI.h" compile="0" resource="0" file="Source/MainGUI.h"/>
     <FILE id="eVQgZi" name="SineComponent.cpp" compile="1" resource="0"
           file="Source/SineComponent.cpp"/>
     <FILE id="pbV3ue" name="SineComponent.h" compile="0" resource="0" file="Source/SineComponent.h"/>

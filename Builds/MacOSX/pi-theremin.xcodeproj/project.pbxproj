@@ -24,6 +24,7 @@
 		24B79368B238939E60858ED1 = {isa = PBXBuildFile; fileRef = DEDE8B634BB4093A86CB7EFA; };
 		709CB9B6E6CA7DAC2245B853 = {isa = PBXBuildFile; fileRef = ED6B8408AADF86306EE34BC6; };
 		A76EA922F06E2C69EFFC37DB = {isa = PBXBuildFile; fileRef = D33DC921CE1AE913DB2C3847; };
+		BA653E50D64738FC836FC060 = {isa = PBXBuildFile; fileRef = 760B86FE7E2A98B74E845FCE; };
 		1F8EB34FA1930725EE7F7201 = {isa = PBXBuildFile; fileRef = 20BACA9626428022B4DE48D3; };
 		3A95DEE4942B55E51C0DA66A = {isa = PBXBuildFile; fileRef = 9C5948B45D449C9CF54E6800; };
 		6BDC13B26726B36EE3633D22 = {isa = PBXBuildFile; fileRef = 79CC2F72A3A24D2486B19D48; };
@@ -54,6 +55,7 @@
 		29069AF84440AF26205386E9 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		295F88772FE5C5660E01903A = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		2A969EB9E41032E9408648F9 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppConfig.h; path = ../../JuceLibraryCode/AppConfig.h; sourceTree = "SOURCE_ROOT"; };
+		340096355229A40A840862A5 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainGUI.h; path = ../../Source/MainGUI.h; sourceTree = "SOURCE_ROOT"; };
 		34D9D3C9251DD39D1F5D1D44 = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		37445610AB0255EAC8B6E34E = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_processors.mm"; path = "../../JuceLibraryCode/include_juce_audio_processors.mm"; sourceTree = "SOURCE_ROOT"; };
 		3BD752A4E054997FB125AE8C = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiscRecording.framework; path = System/Library/Frameworks/DiscRecording.framework; sourceTree = SDKROOT; };
@@ -61,6 +63,7 @@
 		68620DDE912C6BEDF0462AFA = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_formats.mm"; path = "../../JuceLibraryCode/include_juce_audio_formats.mm"; sourceTree = "SOURCE_ROOT"; };
 		6932958DE296BCFE9E33AD3C = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_video"; path = "/Users/danielgray/dev/JUCE/modules/juce_video"; sourceTree = "<absolute>"; };
 		6E9F3B9A29F09F40774DD292 = {isa = PBXFileReference; lastKnownFileType = file; name = "juce_data_structures"; path = "/Users/danielgray/dev/JUCE/modules/juce_data_structures"; sourceTree = "<absolute>"; };
+		760B86FE7E2A98B74E845FCE = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainGUI.cpp; path = ../../Source/MainGUI.cpp; sourceTree = "SOURCE_ROOT"; };
 		79CC2F72A3A24D2486B19D48 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "include_juce_audio_devices.mm"; path = "../../JuceLibraryCode/include_juce_audio_devices.mm"; sourceTree = "SOURCE_ROOT"; };
 		7ED4C7630C06849A5B7E7386 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SineComponent.h; path = ../../Source/SineComponent.h; sourceTree = "SOURCE_ROOT"; };
 		83C05C3FC4D1B86C29C22B0E = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -98,6 +101,8 @@
 					D33DC921CE1AE913DB2C3847, ); name = Source; sourceTree = "<group>"; };
 		063162D450076E3BB2FDDFE3 = {isa = PBXGroup; children = (
 					FF23067496EBC43395A49BBA,
+					760B86FE7E2A98B74E845FCE,
+					340096355229A40A840862A5,
 					20BACA9626428022B4DE48D3,
 					7ED4C7630C06849A5B7E7386, ); name = "pi-theremin"; sourceTree = "<group>"; };
 		A1A876D14E2B3FBC2C45918A = {isa = PBXGroup; children = (
@@ -311,6 +316,7 @@
 		9FAB2C7C898354F730DAB90B = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
 					709CB9B6E6CA7DAC2245B853,
 					A76EA922F06E2C69EFFC37DB,
+					BA653E50D64738FC836FC060,
 					1F8EB34FA1930725EE7F7201,
 					3A95DEE4942B55E51C0DA66A,
 					6BDC13B26726B36EE3633D22,

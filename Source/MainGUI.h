@@ -33,7 +33,8 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class MainGUI  : public Component
+class MainGUI  : public Component,
+                 public Button::Listener
 {
 public:
     //==============================================================================
@@ -46,7 +47,13 @@ public:
 
     void paint (Graphics& g) override;
     void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
+    // Binary resources:
+    static const char* sinWave_png;
+    static const int sinWave_pngSize;
+    static const char* squareWave_png;
+    static const int squareWave_pngSize;
 
 
 private:
@@ -54,6 +61,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> sineWaveButton;
+    ScopedPointer<TextButton> squareWaveButton;
+    ScopedPointer<TextButton> triangleWaveButton;
+    ScopedPointer<Label> note;
+    ScopedPointer<Label> sensorReading;
+    ScopedPointer<TextButton> plusOctave;
+    ScopedPointer<Label> octave;
+    ScopedPointer<TextButton> minusOctave;
 
 
     //==============================================================================
