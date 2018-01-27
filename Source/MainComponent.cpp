@@ -25,13 +25,13 @@ public:
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         
-        addAndMakeVisible (sineWaveButton = new TextButton ("sineWaveButton"));
+        addAndMakeVisible (sineWaveButton = new TextButton ("Sine Wave"));
         sineWaveButton->addListener (this);
         
-        addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
+        addAndMakeVisible (squareWaveButton = new TextButton ("Square Wave"));
         squareWaveButton->addListener (this);
         
-        addAndMakeVisible (triangleWaveButton = new TextButton ("triangleWaveButton"));
+        addAndMakeVisible (triangleWaveButton = new TextButton ("Triangle Wave"));
         triangleWaveButton->addListener (this);
         
         addAndMakeVisible (note = new Label ("note",
@@ -67,7 +67,7 @@ public:
         minusOctave->setButtonText (TRANS("-"));
         minusOctave->addListener (this);
         
-        setSize (800, 600);
+        setSize (1100, 800);
         
         // Volume
         //        addAndMakeVisible(volumeSlider);
@@ -269,9 +269,9 @@ public:
 //        freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
 //        m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
         
-        sineWaveButton->setBounds (0, 0, (getWidth() / 3) - 10, 104);
-        squareWaveButton->setBounds (getWidth() / 3 + 5, 0, (getWidth() / 3) - 10, 104);
-        triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 0, (getWidth() / 3) - 10, 104);
+        sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
+        squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
+        triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
         note->setBounds (16, 136, 88, 64);
         sensorReading->setBounds (8, 208, 150, 24);
         plusOctave->setBounds (88, 264, 31, 24);
