@@ -28,53 +28,18 @@ public:
         
         setSize (1100, 800);
         
-        // Volume
-        //        addAndMakeVisible(volumeSlider);
-        //        volumeSlider.setRange(-96, 6);
-        //        volumeSlider.setTextValueSuffix(" db");
-        //        volumeSlider.setValue(-6);
-        //        volumeSlider.addListener(this);
-        //        //volumeSlider.setSkewFactorFromMidPoint(0.5);
-        //
-        //        volumeLabel.setText("Volume", dontSendNotification);
-        //        volumeLabel.attachToComponent(&volumeSlider, true);
-        //
-        //        // phase slider
-        //        addAndMakeVisible(phaseSlider);
-        //        phaseSlider.setRange(0.0, 1.0);
-        //        phaseSlider.setTextValueSuffix(" ~");
-        //        phaseSlider.setValue(0.0);
-        //        phaseSlider.addListener(this);
-        //
-        //        phaseLabel.setText("Phase", dontSendNotification);
-        //        phaseLabel.attachToComponent(&phaseSlider, true);
-        //
-                // freq slider
-                addAndMakeVisible(freqSlider);
-                freqSlider.setRange(10, 22000);
-                freqSlider.setTextValueSuffix(" Hz");
-                freqSlider.setValue(440.0);
-                freqSlider.addListener(this);
-                freqSlider.setSkewFactorFromMidPoint(500);
-        //
-                freqLabel.setText("Freq", dontSendNotification);
-                freqLabel.attachToComponent(&freqSlider, true);
-        //
-        //        // mute button
-        //        addAndMakeVisible(m_muteButton);
-        //        m_muteButton.setButtonText("Mute");
-        //        m_muteButton.addListener(this);
-        //        m_muteButton.setEnabled(true);
+
+        addAndMakeVisible(freqSlider);
+        freqSlider.setRange(10, 22000);
+        freqSlider.setTextValueSuffix(" Hz");
+        freqSlider.setValue(220.0);
+        freqSlider.addListener(this);
+        freqSlider.setSkewFactorFromMidPoint(500);
         
     }
 
     ~MainContentComponent()
     {
-        note = nullptr;
-        sensorReading = nullptr;
-        plusOctave = nullptr;
-        octave = nullptr;
-        minusOctave = nullptr;
         shutdownAudio();
     }
 
@@ -82,18 +47,11 @@ public:
     
     void sliderValueChanged(Slider *slider) override
     {
-        if (slider == &volumeSlider) {
-            sinAmplitude = pow(10, ((float)volumeSlider.getValue() / 20.0));
-        }
         
         if (slider == &freqSlider) {
             frequency = (float)freqSlider.getValue();
             phaseAngleChange = frequency * Ts * 2 * float_Pi;
             
-        }
-        
-        if (slider == &phaseSlider) {
-            phaseAngle = (float)phaseSlider.getValue();
         }
     }
     
@@ -116,16 +74,13 @@ public:
         message << " sampleRate = " << thisSampleRate;
         Logger::getCurrentLogger()->writeToLog (message);
         
-        sinAmplitude = 0.5;
+        amplitude = 0.5;
         frequency = 220;
         phaseAngle = 0.0;
-        sinTime = 0.0;
-        sinDeltaTime = 1/thisSampleRate;
+        time = 0.0;
+        deltaTime = 1/thisSampleRate;
         sampleRate = thisSampleRate;
         Ts = 1/sampleRate;
-        responseTime = 0.25;
-        prevFrequency = frequency;
-        prevFreqSmooth = 1.0;
         
     }
     
@@ -133,8 +88,8 @@ public:
     {
         float *monoBuffer = new float[bufferToFill.numSamples];
         
-        if (sinTime >= std::numeric_limits<float>::max()) {
-            sinTime = 0.0;
+        if (time >= std::numeric_limits<float>::max()) {
+            time = 0.0;
         }
         
         if (MainGUI.currentWave == "sine") {
@@ -144,9 +99,9 @@ public:
                 if (phaseAngle > (2 * float_Pi)) {
                     phaseAngle -= (2 * float_Pi);
                 }
-                float value = sinAmplitude * sin(phaseAngle);
+                float value = amplitude * sin(phaseAngle);
                 monoBuffer[sample] = value;
-                sinTime += sinDeltaTime;
+                time += deltaTime;
             }
             
         } else if (MainGUI.currentWave == "square") {
@@ -156,10 +111,10 @@ public:
                 if (phaseAngle > (2 * float_Pi)) {
                     phaseAngle -= (2 * float_Pi);
                 }
-                float value = sinAmplitude * sign(sin(phaseAngle));
+                float value = amplitude * sign(sin(phaseAngle));
                 
                 monoBuffer[sample] = value;
-                sinTime += sinDeltaTime;
+                time += deltaTime;
             }
         } else if (MainGUI.currentWave == "triange") {
             
@@ -215,22 +170,17 @@ public:
      */
 
 private:
-    Slider volumeSlider;
     Slider freqSlider;
-    Slider phaseSlider;
-    Label volumeLabel;
-    Label freqLabel;
-    Label phaseLabel;
     MainGUI MainGUI;
-    
-    ScopedPointer<Label> note;
-    ScopedPointer<Label> sensorReading;
-    ScopedPointer<TextButton> plusOctave;
-    ScopedPointer<Label> octave;
-    ScopedPointer<TextButton> minusOctave;
-    
-    TextButton m_muteButton;
-    bool m_mute;
+
+    float amplitude;
+    float frequency;
+    float phaseAngle;
+    float time;
+    float deltaTime;
+    float Ts;
+    float sampleRate;
+    float phaseAngleChange;
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {
@@ -249,22 +199,6 @@ private:
                                           messageText,
                                           "OK");
     }
-
-    
-    Random random;
-    
-    float sinAmplitude;
-    float frequency;
-    float prevFrequency;
-    float freqSmooth;
-    float phaseAngle;
-    float sinTime;
-    float sinDeltaTime;
-    float Ts;
-    float sampleRate;
-    float responseTime;
-    float prevFreqSmooth;
-    float phaseAngleChange;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
