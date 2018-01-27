@@ -54,6 +54,9 @@ public:
     static const int sinWave_pngSize;
     static const char* squareWave_png;
     static const int squareWave_pngSize;
+    
+    String waves[3];
+    static String currentWave;
 
 
 private:
