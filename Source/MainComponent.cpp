@@ -13,7 +13,9 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainContentComponent   : public AudioAppComponent
+class MainContentComponent   : public AudioAppComponent,
+                               private OSCReceiver,
+                               private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>
 {
 public:
     //==============================================================================
@@ -23,6 +25,14 @@ public:
 
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
+        
+        // specify a UDP port to connect to with OSCReceiver
+        if (!connect(6969))
+            std::cout << "Tried to Connect" << std::endl;
+            showConnectionErrorMessage("Error: could not connect to port 6969");
+        
+        // listen to OSC messages at this address at port 6969
+        addListener(this, "/theremin/midi");
     }
 
     ~MainContentComponent()
@@ -82,6 +92,25 @@ private:
     //==============================================================================
 
     // Your private member variables go here...
+    
+    void oscMessageReceived (const OSCMessage& message) override {
+        if (message.size() == 1 && message[0].isInt32()) {
+            // Message logic here
+            int value = message[0].getInt32();
+            std::cout << value << std::endl;
+            
+        }
+    }
+    
+    void showConnectionErrorMessage (const String& messageText)
+    {
+        AlertWindow::showMessageBoxAsync (
+                                          AlertWindow::WarningIcon,
+                                          "Connection error",
+                                          messageText,
+                                          "OK");
+    }
+    
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
