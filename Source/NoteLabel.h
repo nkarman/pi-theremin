@@ -19,30 +19,15 @@
 
 #pragma once
 
-//[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-//[/Headers]
 
-
-
-//==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Projucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class NoteLabel  : public Component
+
 {
 public:
-    //==============================================================================
     NoteLabel ();
     ~NoteLabel();
 
-    //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
-    //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
@@ -50,16 +35,8 @@ public:
 
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
-    //==============================================================================
     ScopedPointer<Label> label;
 
-
-    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteLabel)
 };
 
-//[EndFile] You can add extra defines here...
-//[/EndFile]

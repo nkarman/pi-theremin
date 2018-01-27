@@ -14,6 +14,13 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
+
+struct MidiCallbackMessage : public Message
+{
+    MidiCallbackMessage (const MidiMessage& msg) : message (msg) {}
+    MidiMessage message;
+};
+
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>
