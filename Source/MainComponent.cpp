@@ -34,6 +34,9 @@ public:
         addAndMakeVisible (triangleWaveButton = new TextButton ("Triangle Wave"));
         triangleWaveButton->addListener (this);
         
+        addAndMakeVisible (MuteButton = new TextButton("Mute"));
+        MuteButton->addListener (this);
+        
         addAndMakeVisible (note = new Label ("note",
                                              TRANS("Notes")));
         note->setFont (Font (23.50f, Font::plain).withTypefaceStyle ("Regular"));
@@ -143,9 +146,10 @@ public:
             currentWave = waves[2];
             std::cout << currentWave << std::endl;
         }
-        else if (buttonThatWasClicked == plusOctave)
+        else if (buttonThatWasClicked == MuteButton)
         {
-
+            muted = !muted;
+            
         }
         else if (buttonThatWasClicked == minusOctave)
         {
@@ -191,7 +195,7 @@ public:
         Logger::getCurrentLogger()->writeToLog (message);
         
         sinAmplitude = 0.5;
-        frequency = 220;
+        frequency = 0;
         phaseAngle = 0.0;
         sinTime = 0.0;
         sinDeltaTime = 1/thisSampleRate;
@@ -210,7 +214,7 @@ public:
         if (sinTime >= std::numeric_limits<float>::max()) {
             sinTime = 0.0;
         }
-        
+  
         if (currentWave == "sine") {
             // generate sin wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
@@ -235,11 +239,10 @@ public:
                 monoBuffer[sample] = value;
                 sinTime += sinDeltaTime;
             }
-        } else if (currentWave == "triange") {
-            
         }
+    
 
-        
+    
         // iterate over all available output channels
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
         {
@@ -247,9 +250,10 @@ public:
             float* const buffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
             
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                buffer[sample] = monoBuffer[sample];
+                buffer[sample] = muted ? 0 : monoBuffer[sample];
             }
         }
+        
         
     }
     
@@ -279,6 +283,7 @@ public:
         sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
         squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
         triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
+        MuteButton->setBounds(getWidth() / 2, getHeight() / 2, getWidth() / 3, 104);
         note->setBounds (16, 136, 88, 64);
         sensorReading->setBounds (8, 208, 150, 24);
         plusOctave->setBounds (88, 264, 31, 24);
@@ -304,33 +309,9 @@ private:
     ScopedPointer<TextButton> plusOctave;
     ScopedPointer<Label> octave;
     ScopedPointer<TextButton> minusOctave;
-    
-    TextButton m_muteButton;
-    bool m_mute;
-    String waves [3] = { "sine", "square", "triange" };
-    String currentWave = waves[1];
-    
-    void oscMessageReceived (const OSCMessage& message) override {
-        if (message.size() == 1 && message[0].isFloat32()) {
-            // Message logic here
-            float value = message[0].getFloat32();
-            double noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
-            freqSlider.setValue(noteValue);
-        }
-    }
-    
-    void showConnectionErrorMessage (const String& messageText)
-    {
-        AlertWindow::showMessageBoxAsync (
-                                          AlertWindow::WarningIcon,
-                                          "Connection error",
-                                          messageText,
-                                          "OK");
-    }
-
+    ScopedPointer<TextButton> MuteButton;
     
     Random random;
-    
     float sinAmplitude;
     float frequency;
     float prevFrequency;
@@ -343,6 +324,31 @@ private:
     float responseTime;
     float prevFreqSmooth;
     float phaseAngleChange;
+    bool muted = false;
+
+    String waves [3] = { "sine", "square", "triange" };
+    String currentWave = waves[0];
+    
+    void oscMessageReceived (const OSCMessage& message) override {
+        if (message.size() == 1 && message[0].isFloat32()) {
+            muted = false;
+            // Message logic here
+            float value = message[0].getFloat32();
+            double noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
+            freqSlider.setValue(noteValue);
+        } else if (message.size() == 0) {
+            muted = true;
+        }
+    }
+    
+    void showConnectionErrorMessage (const String& messageText)
+    {
+        AlertWindow::showMessageBoxAsync (
+                                          AlertWindow::WarningIcon,
+                                          "Connection error",
+                                          messageText,
+                                          "OK");
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
