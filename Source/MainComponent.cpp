@@ -90,16 +90,16 @@ public:
         //        phaseLabel.setText("Phase", dontSendNotification);
         //        phaseLabel.attachToComponent(&phaseSlider, true);
         //
-        //        // freq slider
-        //        addAndMakeVisible(freqSlider);
-        //        freqSlider.setRange(10, 22000);
-        //        freqSlider.setTextValueSuffix(" Hz");
-        //        freqSlider.setValue(440.0);
-        //        freqSlider.addListener(this);
-        //        freqSlider.setSkewFactorFromMidPoint(500);
+                // freq slider
+                addAndMakeVisible(freqSlider);
+                freqSlider.setRange(10, 22000);
+                freqSlider.setTextValueSuffix(" Hz");
+                freqSlider.setValue(440.0);
+                freqSlider.addListener(this);
+                freqSlider.setSkewFactorFromMidPoint(500);
         //
-        //        freqLabel.setText("Freq", dontSendNotification);
-        //        freqLabel.attachToComponent(&freqSlider, true);
+                freqLabel.setText("Freq", dontSendNotification);
+                freqLabel.attachToComponent(&freqSlider, true);
         //
         //        // mute button
         //        addAndMakeVisible(m_muteButton);
@@ -161,17 +161,19 @@ public:
         }
         
         if (slider == &freqSlider) {
-            sinFrequency = (float)freqSlider.getValue();
+            frequency = (float)freqSlider.getValue();
+            phaseAngleChange = frequency * Ts * 2 * float_Pi;
+            
         }
         
         if (slider == &phaseSlider) {
-            sinPhase = (float)phaseSlider.getValue();
+            phaseAngle = (float)phaseSlider.getValue();
         }
     }
     
     int sign(double value) { return (value >= 0.0) ? 1 : -1; }
     
-    void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override
+    void prepareToPlay (int samplesPerBlockExpected, double thisSampleRate) override
     {
         // This function will be called when the audio device is started, or when
         // its settings (i.e. sample rate, block size, etc) are changed.
@@ -185,14 +187,19 @@ public:
         String message;
         message << "Preparing to play audio..." + currentWave << newLine;
         message << " samplesPerBlockExpected = " << samplesPerBlockExpected << newLine;
-        message << " sampleRate = " << sampleRate;
+        message << " sampleRate = " << thisSampleRate;
         Logger::getCurrentLogger()->writeToLog (message);
         
         sinAmplitude = 0.5;
-        sinFrequency = 440;
-        sinPhase = 0.0;
+        frequency = 220;
+        phaseAngle = 0.0;
         sinTime = 0.0;
-        sinDeltaTime = 1/sampleRate;
+        sinDeltaTime = 1/thisSampleRate;
+        sampleRate = thisSampleRate;
+        Ts = 1/sampleRate;
+        responseTime = 0.25;
+        prevFrequency = frequency;
+        prevFreqSmooth = 1.0;
         
     }
     
@@ -207,7 +214,11 @@ public:
         if (currentWave == "sine") {
             // generate sin wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                float value = sinAmplitude * sin(2 * double_Pi * sinFrequency * sinTime + sinPhase);
+                phaseAngle += phaseAngleChange;
+                if (phaseAngle > (2 * float_Pi)) {
+                    phaseAngle -= (2 * float_Pi);
+                }
+                float value = sinAmplitude * sin(phaseAngle);
                 monoBuffer[sample] = value;
                 sinTime += sinDeltaTime;
             }
@@ -215,7 +226,11 @@ public:
         } else if (currentWave == "square") {
             // generate square wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                float value = sinAmplitude * sign(sin(2 * double_Pi * sinFrequency * sinTime + sinPhase));
+                phaseAngle += phaseAngleChange;
+                if (phaseAngle > (2 * float_Pi)) {
+                    phaseAngle -= (2 * float_Pi);
+                }
+                float value = sinAmplitude * sign(sin(phaseAngle));
                 
                 monoBuffer[sample] = value;
                 sinTime += sinDeltaTime;
@@ -260,15 +275,7 @@ public:
 
     void resized() override
     {
-        // This is called when the MainContentComponent is resized.
-        // If you add any child components, this is where you should
-        // update their positions.
-//        const int sliderLeft = 50;
-//        volumeSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
-//        phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
-//        freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
-//        m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
-        
+        freqSlider.setBounds(50, 250, getWidth() - 60, 20);
         sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
         squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
         triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
@@ -281,11 +288,6 @@ public:
 
 
 private:
-    //==============================================================================
-
-    // Your private member variables go here...
-    // GUI
-    
     Slider volumeSlider;
     Slider freqSlider;
     Slider phaseSlider;
@@ -306,15 +308,13 @@ private:
     TextButton m_muteButton;
     bool m_mute;
     String waves [3] = { "sine", "square", "triange" };
-    String currentWave = waves[0];
+    String currentWave = waves[1];
     
     void oscMessageReceived (const OSCMessage& message) override {
-        if (message.size() == 1 && message[0].isInt32()) {
+        if (message.size() == 1 && message[0].isFloat32()) {
             // Message logic here
-            int value = message[0].getInt32();
-            std::cout << value << std::endl;
-            double noteValue = round((440 * (pow(1.059463, value))) * 10) / 10;
-            
+            float value = message[0].getFloat32();
+            double noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
             freqSlider.setValue(noteValue);
         }
     }
@@ -332,10 +332,17 @@ private:
     Random random;
     
     float sinAmplitude;
-    float sinFrequency;
-    float sinPhase;
+    float frequency;
+    float prevFrequency;
+    float freqSmooth;
+    float phaseAngle;
     float sinTime;
     float sinDeltaTime;
+    float Ts;
+    float sampleRate;
+    float responseTime;
+    float prevFreqSmooth;
+    float phaseAngleChange;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
