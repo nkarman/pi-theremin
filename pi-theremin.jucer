@@ -10,6 +10,8 @@
             file="Source/MainComponent.cpp"/>
       <FILE id="ZDEyGF" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
+    <FILE id="lacUdO" name="NoteLabel.cpp" compile="1" resource="0" file="Source/NoteLabel.cpp"/>
+    <FILE id="Elb0WX" name="NoteLabel.h" compile="0" resource="0" file="Source/NoteLabel.h"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">

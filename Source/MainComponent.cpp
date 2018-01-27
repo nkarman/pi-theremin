@@ -7,6 +7,7 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "NoteLabel.h"
 
 //==============================================================================
 /*
@@ -27,12 +28,16 @@ public:
         setAudioChannels (2, 2);
         
         // specify a UDP port to connect to with OSCReceiver
+        /*
         if (!connect(6969))
             std::cout << "Tried to Connect" << std::endl;
             showConnectionErrorMessage("Error: could not connect to port 6969");
-        
+        */
+        connect(6969);
         // listen to OSC messages at this address at port 6969
         addListener(this, "/theremin/midi");
+        
+        addAndMakeVisible(noteLabel);
     }
 
     ~MainContentComponent()
@@ -98,7 +103,7 @@ private:
             // Message logic here
             int value = message[0].getInt32();
             std::cout << value << std::endl;
-            
+            noteLabel.changeValue(std::to_string(value));
         }
     }
     
@@ -111,7 +116,7 @@ private:
                                           "OK");
     }
     
-
+    NoteLabel noteLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
