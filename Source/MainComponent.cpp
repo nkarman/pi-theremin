@@ -1,39 +1,23 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-  ==============================================================================
-*/
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "MainGUI.h"
 
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
+
+
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
                                public Slider::Listener,
                                public TextButton::Listener
+                                
 {
 public:
-    //==============================================================================
     MainContentComponent()
     {
-        setSize (800, 600);
-
+        
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
-        
         // specify a UDP port to connect to with OSCReceiver
-        /*
-        if (!connect(6969))
-            std::cout << "Tried to Connect" << std::endl;
-            showConnectionErrorMessage("Error: could not connect to port 6969");
-        */
         connect(6969);
         // listen to OSC messages at this address at port 6969
         addListener(this, "/theremin/midi");
@@ -41,55 +25,131 @@ public:
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         
+        addAndMakeVisible (sineWaveButton = new TextButton ("sineWaveButton"));
+        sineWaveButton->addListener (this);
+        
+        addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
+        squareWaveButton->addListener (this);
+        
+        addAndMakeVisible (triangleWaveButton = new TextButton ("triangleWaveButton"));
+        triangleWaveButton->addListener (this);
+        
+        addAndMakeVisible (note = new Label ("note",
+                                             TRANS("Notes")));
+        note->setFont (Font (23.50f, Font::plain).withTypefaceStyle ("Regular"));
+        note->setJustificationType (Justification::centred);
+        note->setEditable (false, false, false);
+        note->setColour (Label::backgroundColourId, Colours::blueviolet);
+        note->setColour (TextEditor::textColourId, Colours::black);
+        note->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+        
+        addAndMakeVisible (sensorReading = new Label ("sensorReading",
+                                                      TRANS("sensor reading\n")));
+        sensorReading->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        sensorReading->setJustificationType (Justification::centredLeft);
+        sensorReading->setEditable (false, false, false);
+        sensorReading->setColour (TextEditor::textColourId, Colours::black);
+        sensorReading->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+        
+        addAndMakeVisible (plusOctave = new TextButton ("plusOctave"));
+        plusOctave->setButtonText (TRANS("+"));
+        plusOctave->addListener (this);
+        
+        addAndMakeVisible (octave = new Label ("octave",
+                                               TRANS("octave #")));
+        octave->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        octave->setJustificationType (Justification::centredLeft);
+        octave->setEditable (false, false, false);
+        octave->setColour (TextEditor::textColourId, Colours::black);
+        octave->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+        
+        addAndMakeVisible (minusOctave = new TextButton ("minusOctave"));
+        minusOctave->setButtonText (TRANS("-"));
+        minusOctave->addListener (this);
+        
+        setSize (800, 600);
+        
         // Volume
-        addAndMakeVisible(volumeSlider);
-        volumeSlider.setRange(-96, 6);
-        volumeSlider.setTextValueSuffix(" db");
-        volumeSlider.setValue(-6);
-        volumeSlider.addListener(this);
-        //volumeSlider.setSkewFactorFromMidPoint(0.5);
+        //        addAndMakeVisible(volumeSlider);
+        //        volumeSlider.setRange(-96, 6);
+        //        volumeSlider.setTextValueSuffix(" db");
+        //        volumeSlider.setValue(-6);
+        //        volumeSlider.addListener(this);
+        //        //volumeSlider.setSkewFactorFromMidPoint(0.5);
+        //
+        //        volumeLabel.setText("Volume", dontSendNotification);
+        //        volumeLabel.attachToComponent(&volumeSlider, true);
+        //
+        //        // phase slider
+        //        addAndMakeVisible(phaseSlider);
+        //        phaseSlider.setRange(0.0, 1.0);
+        //        phaseSlider.setTextValueSuffix(" ~");
+        //        phaseSlider.setValue(0.0);
+        //        phaseSlider.addListener(this);
+        //
+        //        phaseLabel.setText("Phase", dontSendNotification);
+        //        phaseLabel.attachToComponent(&phaseSlider, true);
+        //
+        //        // freq slider
+        //        addAndMakeVisible(freqSlider);
+        //        freqSlider.setRange(10, 22000);
+        //        freqSlider.setTextValueSuffix(" Hz");
+        //        freqSlider.setValue(440.0);
+        //        freqSlider.addListener(this);
+        //        freqSlider.setSkewFactorFromMidPoint(500);
+        //
+        //        freqLabel.setText("Freq", dontSendNotification);
+        //        freqLabel.attachToComponent(&freqSlider, true);
+        //
+        //        // mute button
+        //        addAndMakeVisible(m_muteButton);
+        //        m_muteButton.setButtonText("Mute");
+        //        m_muteButton.addListener(this);
+        //        m_muteButton.setEnabled(true);
         
-        volumeLabel.setText("Volume", dontSendNotification);
-        volumeLabel.attachToComponent(&volumeSlider, true);
-        
-        // phase slider
-        addAndMakeVisible(phaseSlider);
-        phaseSlider.setRange(0.0, 1.0);
-        phaseSlider.setTextValueSuffix(" ~");
-        phaseSlider.setValue(0.0);
-        phaseSlider.addListener(this);
-        
-        phaseLabel.setText("Phase", dontSendNotification);
-        phaseLabel.attachToComponent(&phaseSlider, true);
-        
-        // freq slider
-        addAndMakeVisible(freqSlider);
-        freqSlider.setRange(10, 22000);
-        freqSlider.setTextValueSuffix(" Hz");
-        freqSlider.setValue(440.0);
-        freqSlider.addListener(this);
-        freqSlider.setSkewFactorFromMidPoint(500);
-        
-        freqLabel.setText("Freq", dontSendNotification);
-        freqLabel.attachToComponent(&freqSlider, true);
-        
-        // mute button
-        addAndMakeVisible(m_muteButton);
-        m_muteButton.setButtonText("Mute");
-        m_muteButton.addListener(this);
-        m_muteButton.setEnabled(true);
     }
 
     ~MainContentComponent()
     {
+        sineWaveButton = nullptr;
+        squareWaveButton = nullptr;
+        triangleWaveButton = nullptr;
+        note = nullptr;
+        sensorReading = nullptr;
+        plusOctave = nullptr;
+        octave = nullptr;
+        minusOctave = nullptr;
         shutdownAudio();
     }
 
     //==============================================================================
-    void buttonClicked(Button* button) override
+    
+    void buttonClicked (Button* buttonThatWasClicked) override
     {
-        if (button == &m_muteButton) {
-            m_mute = !m_mute;
+
+        
+        if (buttonThatWasClicked == sineWaveButton)
+        {
+            currentWave = waves[0];
+            std::cout << currentWave << std::endl;
+        }
+        else if (buttonThatWasClicked == squareWaveButton)
+        {
+            currentWave = waves[1];
+            std::cout << currentWave << std::endl;
+        }
+        else if (buttonThatWasClicked == triangleWaveButton)
+        {
+            currentWave = waves[2];
+            std::cout << currentWave << std::endl;
+        }
+        else if (buttonThatWasClicked == plusOctave)
+        {
+
+        }
+        else if (buttonThatWasClicked == minusOctave)
+        {
+
         }
         
     }
@@ -123,7 +183,7 @@ public:
         
         
         String message;
-        message << "Preparing to play audio..." << newLine;
+        message << "Preparing to play audio..." + currentWave << newLine;
         message << " samplesPerBlockExpected = " << samplesPerBlockExpected << newLine;
         message << " sampleRate = " << sampleRate;
         Logger::getCurrentLogger()->writeToLog (message);
@@ -138,29 +198,32 @@ public:
     
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
-        
-        // Your audio-processing code goes here!
-        
-        // For more details, see the help for AudioProcessor::getNextAudioBlock()
-        
-        // Right now we are not producing any data, in which case we need to clear the buffer
-        // (to prevent the output of random noise)
-        //bufferToFill.clearActiveBufferRegion();
+        float *monoBuffer = new float[bufferToFill.numSamples];
         
         if (sinTime >= std::numeric_limits<float>::max()) {
             sinTime = 0.0;
         }
         
-        float *monoBuffer = new float[bufferToFill.numSamples];
-        
-        
-        // generate sin wave in mono
-        for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-            float value = sinAmplitude * sign(sin(2 * double_Pi * sinFrequency * sinTime + sinPhase));
+        if (currentWave == "sine") {
+            // generate sin wave in mono
+            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+                float value = sinAmplitude * sin(2 * double_Pi * sinFrequency * sinTime + sinPhase);
+                monoBuffer[sample] = value;
+                sinTime += sinDeltaTime;
+            }
             
-            monoBuffer[sample] = value;
-            sinTime += sinDeltaTime;
+        } else if (currentWave == "square") {
+            // generate square wave in mono
+            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+                float value = sinAmplitude * sign(sin(2 * double_Pi * sinFrequency * sinTime + sinPhase));
+                
+                monoBuffer[sample] = value;
+                sinTime += sinDeltaTime;
+            }
+        } else if (currentWave == "triange") {
+            
         }
+
         
         // iterate over all available output channels
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
@@ -190,6 +253,7 @@ public:
     {
         // (Our component is opaque, so we must completely fill the background with a solid colour)
         g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    
 
         // You can add your drawing code here!
     }
@@ -199,11 +263,20 @@ public:
         // This is called when the MainContentComponent is resized.
         // If you add any child components, this is where you should
         // update their positions.
-        const int sliderLeft = 50;
-        volumeSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
-        phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
-        freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
-        m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
+//        const int sliderLeft = 50;
+//        volumeSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
+//        phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
+//        freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
+//        m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
+        
+        sineWaveButton->setBounds (0, 0, (getWidth() / 3) - 10, 104);
+        squareWaveButton->setBounds (getWidth() / 3 + 5, 0, (getWidth() / 3) - 10, 104);
+        triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 0, (getWidth() / 3) - 10, 104);
+        note->setBounds (16, 136, 88, 64);
+        sensorReading->setBounds (8, 208, 150, 24);
+        plusOctave->setBounds (88, 264, 31, 24);
+        octave->setBounds (32, 264, 55, 24);
+        minusOctave->setBounds (0, 264, 31, 24);
     }
 
 
@@ -219,9 +292,21 @@ private:
     Label volumeLabel;
     Label freqLabel;
     Label phaseLabel;
+    MainGUI MainGUI;
+    
+    ScopedPointer<TextButton> sineWaveButton;
+    ScopedPointer<TextButton> squareWaveButton;
+    ScopedPointer<TextButton> triangleWaveButton;
+    ScopedPointer<Label> note;
+    ScopedPointer<Label> sensorReading;
+    ScopedPointer<TextButton> plusOctave;
+    ScopedPointer<Label> octave;
+    ScopedPointer<TextButton> minusOctave;
     
     TextButton m_muteButton;
     bool m_mute;
+    String waves [3] = { "sine", "square", "triange" };
+    String currentWave = waves[0];
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isInt32()) {
@@ -242,6 +327,7 @@ private:
                                           messageText,
                                           "OK");
     }
+
     
     Random random;
     

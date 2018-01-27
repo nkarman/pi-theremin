@@ -33,12 +33,14 @@ MainGUI::MainGUI ()
     //[/Constructor_pre]
 
     addAndMakeVisible (sineWaveButton = new TextButton ("sineWaveButton"));
+    sineWaveButton->setButtonText (TRANS("Sine Wave"));
     sineWaveButton->addListener (this);
 
     addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
-    squareWaveButton->addListener (this);
+    squareWaveButton->setButtonText (TRANS("Square Wave"));
 
     addAndMakeVisible (triangleWaveButton = new TextButton ("triangleWaveButton"));
+    triangleWaveButton->setButtonText (TRANS("Triangle Wave"));
     triangleWaveButton->addListener (this);
 
     addAndMakeVisible (note = new Label ("note",
@@ -113,7 +115,7 @@ void MainGUI::paint (Graphics& g)
     g.fillAll (Colour (0xff323e44));
 
     {
-        int x = 0, y = 108, width = 488, height = 11;
+        int x = 20, y = 140, width = 624, height = 11;
         Colour fillColour = Colour (0xff2aa547);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -122,7 +124,7 @@ void MainGUI::paint (Graphics& g)
     }
 
     {
-        int x = 124, y = 116, width = 12, height = 408;
+        int x = 188, y = 156, width = 12, height = 408;
         Colour fillColour = Colour (0xff2a38a5);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
@@ -131,26 +133,8 @@ void MainGUI::paint (Graphics& g)
     }
 
     {
-        int x = 348, y = 120, width = 12, height = 412;
+        int x = 460, y = 156, width = 12, height = 412;
         Colour fillColour = Colour (0xff2a38a5);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 148, y = 4, width = 4, height = 100;
-        Colour fillColour = Colour (0xff2aa55d);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 324, y = 4, width = 4, height = 100;
-        Colour fillColour = Colour (0xff2aa55d);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
@@ -166,14 +150,14 @@ void MainGUI::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    sineWaveButton->setBounds (0, 0, 144, 104);
-    squareWaveButton->setBounds (160, 0, 160, 104);
-    triangleWaveButton->setBounds (336, 0, 158, 104);
-    note->setBounds (16, 136, 88, 64);
-    sensorReading->setBounds (8, 208, 150, 24);
-    plusOctave->setBounds (88, 264, 31, 24);
-    octave->setBounds (32, 264, 55, 24);
-    minusOctave->setBounds (0, 264, 31, 24);
+    sineWaveButton->setBounds (16, 16, 160, 104);
+    squareWaveButton->setBounds (240, 16, 176, 104);
+    triangleWaveButton->setBounds (472, 16, 174, 104);
+    note->setBounds (40, 184, 88, 64);
+    sensorReading->setBounds (16, 320, 150, 24);
+    plusOctave->setBounds (136, 504, 31, 24);
+    octave->setBounds (72, 504, 55, 24);
+    minusOctave->setBounds (32, 504, 31, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -187,11 +171,6 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_sineWaveButton] -- add your button handler code here..
         //[/UserButtonCode_sineWaveButton]
-    }
-    else if (buttonThatWasClicked == squareWaveButton)
-    {
-        //[UserButtonCode_squareWaveButton] -- add your button handler code here..
-        //[/UserButtonCode_squareWaveButton]
     }
     else if (buttonThatWasClicked == triangleWaveButton)
     {
@@ -233,41 +212,39 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff323e44">
-    <RECT pos="0 108 488 11" fill="solid: ff2aa547" hasStroke="0"/>
-    <RECT pos="124 116 12 408" fill="solid: ff2a38a5" hasStroke="0"/>
-    <RECT pos="348 120 12 412" fill="solid: ff2a38a5" hasStroke="0"/>
-    <RECT pos="148 4 4 100" fill="solid: ff2aa55d" hasStroke="0"/>
-    <RECT pos="324 4 4 100" fill="solid: ff2aa55d" hasStroke="0"/>
+    <RECT pos="20 140 624 11" fill="solid: ff2aa547" hasStroke="0"/>
+    <RECT pos="188 156 12 408" fill="solid: ff2a38a5" hasStroke="0"/>
+    <RECT pos="460 156 12 412" fill="solid: ff2a38a5" hasStroke="0"/>
   </BACKGROUND>
   <TEXTBUTTON name="sineWaveButton" id="3e375b5f735d35ca" memberName="sineWaveButton"
-              virtualName="" explicitFocusOrder="0" pos="0 0 144 104" buttonText="sineWaveButton"
+              virtualName="" explicitFocusOrder="0" pos="16 16 160 104" buttonText="Sine Wave"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="squareWaveButton" id="c624252c29af3aa4" memberName="squareWaveButton"
-              virtualName="" explicitFocusOrder="0" pos="160 0 160 104" buttonText="squareWaveButton"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="240 16 176 104" buttonText="Square Wave"
+              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="triangleWaveButton" id="1c878e15cd0b9254" memberName="triangleWaveButton"
-              virtualName="" explicitFocusOrder="0" pos="336 0 158 104" buttonText="triangleWaveButton"
+              virtualName="" explicitFocusOrder="0" pos="472 16 174 104" buttonText="Triangle Wave"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="note" id="648db8819c9e1ed1" memberName="note" virtualName=""
-         explicitFocusOrder="0" pos="16 136 88 64" bkgCol="ff8a2be2" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="40 184 88 64" bkgCol="ff8a2be2" edTextCol="ff000000"
          edBkgCol="0" labelText="Notes" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="23.5"
          kerning="0" bold="0" italic="0" justification="36"/>
   <LABEL name="sensorReading" id="4c23bd06500ca4d" memberName="sensorReading"
-         virtualName="" explicitFocusOrder="0" pos="8 208 150 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="16 320 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="sensor reading&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="plusOctave" id="e0e4631d9af519da" memberName="plusOctave"
-              virtualName="" explicitFocusOrder="0" pos="88 264 31 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="136 504 31 24" buttonText="+"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="octave" id="df38cd7c23ba5999" memberName="octave" virtualName=""
-         explicitFocusOrder="0" pos="32 264 55 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="72 504 55 24" edTextCol="ff000000"
          edBkgCol="0" labelText="octave #" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          kerning="0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="minusOctave" id="635122be39353565" memberName="minusOctave"
-              virtualName="" explicitFocusOrder="0" pos="0 264 31 24" buttonText="-"
+              virtualName="" explicitFocusOrder="0" pos="32 504 31 24" buttonText="-"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
