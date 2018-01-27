@@ -109,6 +109,8 @@ public:
         }
     }
     
+    int sign(double value) { return (value >= 0.0) ? 1 : -1; }
+    
     void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override
     {
         // This function will be called when the audio device is started, or when
@@ -151,9 +153,10 @@ public:
         
         float *monoBuffer = new float[bufferToFill.numSamples];
         
+        
         // generate sin wave in mono
         for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-            float value = sinAmplitude * sin(2 * double_Pi * sinFrequency * sinTime + sinPhase);
+            float value = sinAmplitude * sign(sin(2 * double_Pi * sinFrequency * sinTime + sinPhase));
             
             monoBuffer[sample] = value;
             sinTime += sinDeltaTime;
