@@ -33,25 +33,32 @@ public:
     void resized() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
     void sliderValueChanged(Slider *slider) override;
-    
+
 
     // Binary resources:
     static const char* sinWave_png;
     static const int sinWave_pngSize;
     static const char* squareWave_png;
     static const int squareWave_pngSize;
-    
+
     String waves[3];
     static String currentWave;
-    
+
     bool enableDistortion;
     bool enableWaves;
     int distortionAlpha;
-    
+
+    bool enablePhaser;
+    float phaserRate;
+    float phaserDepth;
+    float wetPercent;
+
+
 
 private:
     ScopedPointer<TextButton> sineWaveButton;
     ScopedPointer<TextButton> squareWaveButton;
+    ScopedPointer<TextButton> enabledWaveButton;
     ScopedPointer<Label> note;
     ScopedPointer<Label> sensorReading;
     ScopedPointer<TextButton> plusOctave;
@@ -59,9 +66,12 @@ private:
     ScopedPointer<TextButton> minusOctave;
     LookAndFeel_V4 otherLookAndFeel;
     ScopedPointer<TextButton> distortionButton;
-    ScopedPointer<TextButton> enabledWaveButton;
     Slider distortionKnob;
+    ScopedPointer<TextButton> phaserButton;
+    Slider phaserDepthKnob;
+    Slider phaserRateKnob;
+    Slider phaserWet;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainGUI)
 };
-
