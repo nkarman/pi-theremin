@@ -1,64 +1,23 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.2.0
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
-
-  ==============================================================================
-*/
-
-//[Headers] You can add your own extra header files here...
-//[/Headers]
 
 #include "MainGUI.h"
 
 String MainGUI::currentWave;
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
-
-//==============================================================================
 MainGUI::MainGUI ()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
     waves[0] = { "sine"};
     waves[1] = {"square"};
-    waves[2] = {"triangle"};
-    currentWave = waves[1];
+    currentWave = waves[0];
     
-    addAndMakeVisible (sineWaveButton = new TextButton ("sineWaveButton"));
+    addAndMakeVisible (sineWaveButton = new TextButton("sineWaveButton"));
     sineWaveButton->setButtonText (TRANS("Sine Wave"));
     sineWaveButton->addListener (this);
-    sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
+    sineWaveButton->setBounds (0, 30, (getWidth() / 2), 104);
 
     addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
     squareWaveButton->setButtonText (TRANS("Square Wave"));
     squareWaveButton->addListener (this);
-    squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
-
-    addAndMakeVisible (triangleWaveButton = new TextButton ("triangleWaveButton"));
-    triangleWaveButton->setButtonText (TRANS("Triangle Wave"));
-    triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
-
-    addAndMakeVisible (note = new Label ("note",
-                                         TRANS("Notes")));
-    note->setFont (Font (23.50f, Font::plain).withTypefaceStyle ("Regular"));
-    note->setJustificationType (Justification::centred);
-    note->setEditable (false, false, false);
-    note->setColour (Label::backgroundColourId, Colours::blueviolet);
-    note->setColour (TextEditor::textColourId, Colours::black);
-    note->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    squareWaveButton->setBounds (130, 30, (getWidth() / 2), 104);
 
     addAndMakeVisible (sensorReading = new Label ("sensorReading",
                                                   TRANS("sensor reading\n")));
@@ -67,116 +26,48 @@ MainGUI::MainGUI ()
     sensorReading->setEditable (false, false, false);
     sensorReading->setColour (TextEditor::textColourId, Colours::black);
     sensorReading->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (plusOctave = new TextButton ("plusOctave"));
-    plusOctave->setButtonText (TRANS("+"));
-    plusOctave->addListener (this);
-
-    addAndMakeVisible (octave = new Label ("octave",
-                                           TRANS("octave #")));
-    octave->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    octave->setJustificationType (Justification::centredLeft);
-    octave->setEditable (false, false, false);
-    octave->setColour (TextEditor::textColourId, Colours::black);
-    octave->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (minusOctave = new TextButton ("minusOctave"));
-    minusOctave->setButtonText (TRANS("-"));
-    minusOctave->addListener (this);
+    
+    setSize (800, 800);
 
 
-    //[UserPreSize]
-    //[/UserPreSize]
-
-    setSize (600, 400);
-
-
-    //[Constructor] You can add your own custom stuff here..
-    //[/Constructor]
 }
 
 MainGUI::~MainGUI()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
 
     sineWaveButton = nullptr;
     squareWaveButton = nullptr;
-    triangleWaveButton = nullptr;
-    note = nullptr;
     sensorReading = nullptr;
-    plusOctave = nullptr;
-    octave = nullptr;
-    minusOctave = nullptr;
 
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void MainGUI::paint (Graphics& g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
     g.fillAll (Colour (0xff323e44));
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
 void MainGUI::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-    //freqSlider.setBounds(50, 250, getWidth() - 60, 20);
-    sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
-    squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
-    triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
-    note->setBounds (16, 136, 88, 64);
-    sensorReading->setBounds (8, 208, 150, 24);
-    plusOctave->setBounds (88, 264, 31, 24);
-    octave->setBounds (32, 264, 55, 24);
-    minusOctave->setBounds (0, 264, 31, 24);
+    sineWaveButton->setBounds (0, 30, 100, 104);
+    squareWaveButton->setBounds (130, 30, 100, 104);
+    
 }
 
 void MainGUI::buttonClicked (Button* buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == sineWaveButton)
     {
-        //[UserButtonCode_sineWaveButton] -- add your button handler code here..
-        //[/UserButtonCode_sineWaveButton]
         currentWave = waves[0];
+        
     }
     else if (buttonThatWasClicked == squareWaveButton)
     {
-        //[UserButtonCode_triangleWaveButton] -- add your button handler code here..
-        //[/UserButtonCode_triangleWaveButton]
         currentWave = waves[1];
-    }
-    else if (buttonThatWasClicked == plusOctave)
-    {
-        //[UserButtonCode_plusOctave] -- add your button handler code here..
-        //[/UserButtonCode_plusOctave]
-    }
-    else if (buttonThatWasClicked == minusOctave)
-    {
-        //[UserButtonCode_minusOctave] -- add your button handler code here..
-        //[/UserButtonCode_minusOctave]
-    }
 
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
+    }
 }
 
-
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
 
 
 //==============================================================================

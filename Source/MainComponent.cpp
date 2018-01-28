@@ -7,8 +7,8 @@
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
-                               public Slider::Listener
-                               //public TextButton::Listener,
+                               public Slider::Listener,
+                               private Label::Listener
 
 {
 public:
@@ -24,6 +24,10 @@ public:
         
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
+        
+        addAndMakeVisible(sensor);
+        sensor.setText(String(frequency), dontSendNotification);
+        sensor.setFont( (Font (20.00f, Font::plain).withTypefaceStyle("Bold")));
         
         
         setSize (1100, 800);
@@ -47,7 +51,6 @@ public:
     
     void sliderValueChanged(Slider *slider) override
     {
-        
         if (slider == &freqSlider) {
             frequency = (float)freqSlider.getValue();
             phaseAngleChange = frequency * Ts * 2 * float_Pi;
@@ -116,8 +119,6 @@ public:
                 monoBuffer[sample] = value;
                 time += deltaTime;
             }
-        } else if (MainGUI.currentWave == "triange") {
-            
         }
 
         
@@ -136,41 +137,30 @@ public:
     
     void releaseResources() override
     {
-        // This will be called when the audio device stops, or when it is being
-        // restarted due to a setting change.
-        
-        // For more details, see the help for AudioProcessor::releaseResources()
         
         Logger::getCurrentLogger()->writeToLog ("Releasing audio resources");
     }
 
     //==============================================================================
-    /*
-    void paint (Graphics& g) override
-    {
-        // (Our component is opaque, so we must completely fill the background with a solid colour)
-        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
     
-
-        // You can add your drawing code here!
-    }
+//    void paint (Graphics& g) override
+//    {
+//        // (Our component is opaque, so we must completely fill the background with a solid colour)
+//        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+//
+//
+//        // You can add your drawing code here!
+//    }
+//
+//    void resized() override
+//    {
+//
+//    }
     
-    void resized() override
-    {
-        freqSlider.setBounds(50, 250, getWidth() - 60, 20);
-        sineWaveButton->setBounds (0, 10, (getWidth() / 3) - 10, 104);
-        squareWaveButton->setBounds (getWidth() / 3 + 5, 10, (getWidth() / 3) - 10, 104);
-        triangleWaveButton->setBounds (getWidth() / 1.5 + 10 , 10, (getWidth() / 3) - 10, 104);
-        note->setBounds (16, 136, 88, 64);
-        sensorReading->setBounds (8, 208, 150, 24);
-        plusOctave->setBounds (88, 264, 31, 24);
-        octave->setBounds (32, 264, 55, 24);
-        minusOctave->setBounds (0, 264, 31, 24);
-    }
-     */
 
 private:
     Slider freqSlider;
+    Label sensor;
     MainGUI MainGUI;
 
     float amplitude;
@@ -186,7 +176,7 @@ private:
         if (message.size() == 1 && message[0].isFloat32()) {
             // Message logic here
             float value = message[0].getFloat32();
-            double noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
+            float noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
             freqSlider.setValue(noteValue);
         }
     }
@@ -198,6 +188,11 @@ private:
                                           "Connection error",
                                           messageText,
                                           "OK");
+    }
+    
+    void labelTextChanged(Label* labelThatChanged) override
+    {
+        
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
