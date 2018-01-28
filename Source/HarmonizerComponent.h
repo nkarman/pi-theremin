@@ -56,8 +56,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> textButton;
-    ScopedPointer<TextButton> textButton2;
+    ScopedPointer<TextButton> thirdButton;
+    ScopedPointer<TextButton> fifthButton;
 
 
     //==============================================================================
