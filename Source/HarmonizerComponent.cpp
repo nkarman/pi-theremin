@@ -32,12 +32,13 @@ HarmonizerComponent::HarmonizerComponent ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (textButton = new TextButton ("3rd"));
-    textButton->setButtonText (TRANS("new button"));
-    textButton->addListener (this);
+    addAndMakeVisible (thirdButton = new TextButton ("third"));
+    thirdButton->setButtonText (TRANS("third"));
+    thirdButton->addListener (this);
 
-    addAndMakeVisible (textButton2 = new TextButton ("new button"));
-    textButton2->addListener (this);
+    addAndMakeVisible (fifthButton = new TextButton ("fifth"));
+    fifthButton->setButtonText (TRANS("fifth"));
+    fifthButton->addListener (this);
 
 
     //[UserPreSize]
@@ -55,8 +56,8 @@ HarmonizerComponent::~HarmonizerComponent()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    textButton = nullptr;
-    textButton2 = nullptr;
+    thirdButton = nullptr;
+    fifthButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -69,8 +70,6 @@ void HarmonizerComponent::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff323e44));
-
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -80,8 +79,8 @@ void HarmonizerComponent::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    textButton->setBounds (41, 200, 71, 24);
-    textButton2->setBounds (136, 200, 72, 24);
+    thirdButton->setBounds (140, 300, 71, 24);
+    fifthButton->setBounds (220, 300, 71, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -91,12 +90,12 @@ void HarmonizerComponent::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == textButton)
+    if (buttonThatWasClicked == thirdButton)
     {
         //[UserButtonCode_textButton] -- add your button handler code here..
         //[/UserButtonCode_textButton]
     }
-    else if (buttonThatWasClicked == textButton2)
+    else if (buttonThatWasClicked == fifthButton)
     {
         //[UserButtonCode_textButton2] -- add your button handler code here..
         //[/UserButtonCode_textButton2]
