@@ -42,9 +42,42 @@ MainGUI::MainGUI ()
     distortionKnob.setTextBoxStyle (Slider::TextBoxAbove, false, 80, 20);
     distortionKnob.setBounds(700, 190, 100, 100);
     distortionKnob.addListener(this);
+    
+    // Phaser
+    addAndMakeVisible(phaserButton = new TextButton("phaserButton"));
+    phaserButton->setButtonText(TRANS("Phaser Off"));
+    phaserButton->addListener(this);
+    phaserButton->setBounds(100, 300, 50, 50);
+    phaserButton->setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+
+    addAndMakeVisible(phaserDepthKnob);
+    phaserDepthKnob.setRange(0,10,1);
+    phaserDepthKnob.setValue(1);
+    phaserDepthKnob.setSliderStyle(Slider::RotaryHorizontalDrag);
+    phaserDepthKnob.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+    phaserDepthKnob.setBounds(500, 310, 100, 100);
+    phaserDepthKnob.addListener(this);
+    
+    addAndMakeVisible(phaserRateKnob);
+    phaserRateKnob.setRange(0,10,1);
+    phaserRateKnob.setValue(1);
+    phaserRateKnob.setSliderStyle(Slider::RotaryHorizontalDrag);
+    phaserRateKnob.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+    phaserRateKnob.setBounds(600, 310, 100, 100);
+    phaserRateKnob.addListener(this);
+    
+    addAndMakeVisible(phaserWet);
+    phaserWet.setRange(0, 100, 5);
+    phaserWet.setValue(50);
+    phaserWet.setSliderStyle(Slider::LinearBar);
+    phaserWet.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+    phaserWet.setBounds(700, 310, 100, 50);
+    phaserWet.addListener(this);
+    
+    
+    
+    
     setSize (800, 800);
-
-
 }
 
 MainGUI::~MainGUI()
@@ -54,6 +87,8 @@ MainGUI::~MainGUI()
     squareWaveButton = nullptr;
     sensorReading = nullptr;
     distortionButton = nullptr;
+    phaserButton = nullptr;
+    
 }
 
 //==============================================================================
@@ -67,6 +102,7 @@ void MainGUI::resized()
     sineWaveButton->setBounds (0, 30, 100, 104);
     squareWaveButton->setBounds (130, 30, 100, 104);
     distortionButton->setBounds(200, 180, 400, 104);
+    phaserButton->setBounds(100, 300, 400, 104);
 }
 
 void MainGUI::buttonClicked (Button* buttonThatWasClicked)
@@ -92,6 +128,17 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
             distortionButton->setButtonText(TRANS("Distort Off"));
         }
     }
+    else if (buttonThatWasClicked == phaserButton)
+    {
+        enablePhaser = !enablePhaser;
+        if(enablePhaser) {
+            phaserButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+            phaserButton->setButtonText(TRANS("Phaser On"));
+        } else {
+            phaserButton->setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+            phaserButton->setButtonText(TRANS("Phaser Off"));
+        }
+    }
 }
 
 void MainGUI::sliderValueChanged(Slider* slider)
@@ -99,6 +146,13 @@ void MainGUI::sliderValueChanged(Slider* slider)
     if (slider == &distortionKnob) {
         distortionAlpha = (float)distortionKnob.getValue();
     }
+    if (slider == &phaserDepthKnob) {
+        phaserDepth = (float)phaserDepthKnob.getValue();
+    }
+    if (slider == &phaserRateKnob) {
+        phaserRate = (float)phaserRateKnob.getValue();
+    }
+    
 }
 
 

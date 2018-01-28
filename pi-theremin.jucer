@@ -21,6 +21,8 @@
     <FILE id="pbV3ue" name="SineComponent.h" compile="0" resource="0" file="Source/SineComponent.h"/>
     <FILE id="FBUZSW" name="SquareWave.cpp" compile="1" resource="0" file="Source/SquareWave.cpp"/>
     <FILE id="vD04Ig" name="SquareWave.h" compile="0" resource="0" file="Source/SquareWave.h"/>
+    <FILE id="ZYyY5n" name="Filters.cpp" compile="1" resource="0" file="Source/Filters.cpp"/>
+    <FILE id="pKHQoR" name="Filters.h" compile="0" resource="0" file="Source/Filters.h"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">

@@ -47,6 +47,12 @@ public:
     bool enableDistortion;
     int distortionAlpha;
     
+    bool enablePhaser;
+    float phaserRate;
+    float phaserDepth;
+    float wetPercent;
+    
+    
 
 private:
     ScopedPointer<TextButton> sineWaveButton;
@@ -59,6 +65,11 @@ private:
     LookAndFeel_V4 otherLookAndFeel;
     ScopedPointer<TextButton> distortionButton;
     Slider distortionKnob;
+    ScopedPointer<TextButton> phaserButton;
+    Slider phaserDepthKnob;
+    Slider phaserRateKnob;
+    Slider phaserWet;
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainGUI)
 };
