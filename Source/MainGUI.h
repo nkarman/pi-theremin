@@ -22,7 +22,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 class MainGUI  : public Component,
-                 public Button::Listener
+                 public Button::Listener,
+                 public Slider::Listener
 {
 public:
     MainGUI ();
@@ -31,6 +32,7 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
+    void sliderValueChanged(Slider *slider) override;
     
 
     // Binary resources:
@@ -41,6 +43,10 @@ public:
     
     String waves[3];
     static String currentWave;
+    
+    bool enableDistortion;
+    int distortionAlpha;
+    
 
 private:
     ScopedPointer<TextButton> sineWaveButton;
@@ -51,6 +57,8 @@ private:
     ScopedPointer<Label> octave;
     ScopedPointer<TextButton> minusOctave;
     LookAndFeel_V4 otherLookAndFeel;
+    ScopedPointer<TextButton> distortionButton;
+    Slider distortionKnob;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainGUI)
 };
