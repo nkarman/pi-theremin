@@ -9,19 +9,26 @@ MainGUI::MainGUI ()
     waves[1] = {"square"};
     currentWave = waves[0];
     enableDistortion = false;
+    enableWaves = true;
     distortionAlpha = 1;
     
     addAndMakeVisible (sineWaveButton = new TextButton("sineWaveButton"));
     sineWaveButton->setButtonText (TRANS("Sine Wave"));
     sineWaveButton->addListener (this);
     sineWaveButton->setBounds (30, 30, (getWidth() / 2), 104);
-    sineWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+    sineWaveButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
 
     addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
     squareWaveButton->setButtonText (TRANS("Square Wave"));
     squareWaveButton->addListener (this);
     squareWaveButton->setBounds (130, 30, (getWidth() / 2), 104);
     squareWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+    
+    addAndMakeVisible(enabledWaveButton = new TextButton ("enableWaveButton"));
+    enabledWaveButton->setButtonText (TRANS("Wave Synthesis ON"));
+    enabledWaveButton->addListener(this);
+    enabledWaveButton->setBounds(getWidth() / 2, 5, 50, 30);
+    enabledWaveButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
 
     addAndMakeVisible (sensorReading = new Label ("sensorReading",
                                                   TRANS("sensor reading\n")));
@@ -54,11 +61,11 @@ MainGUI::~MainGUI()
 
     sineWaveButton = nullptr;
     squareWaveButton = nullptr;
+    enabledWaveButton = nullptr;
     sensorReading = nullptr;
     distortionButton = nullptr;
 }
 
-//==============================================================================
 void MainGUI::paint (Graphics& g)
 {
     g.fillAll (Colour (0xff323e44));
@@ -69,6 +76,7 @@ void MainGUI::resized()
     sineWaveButton->setBounds (60, 30, getWidth() / 2.5, 104);
     squareWaveButton->setBounds (getWidth() / 2 + 20, 30, getWidth() / 2.5, 104);
     distortionButton->setBounds(200, 180, 400, 104);
+    enabledWaveButton->setBounds(getWidth() / 2 - 25, 5, 50, 20);
 }
 
 void MainGUI::buttonClicked (Button* buttonThatWasClicked)
@@ -101,6 +109,17 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
         } else {
             distortionButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
             distortionButton->setButtonText(TRANS("Distort Off"));
+        }
+    }
+    else if (buttonThatWasClicked == enabledWaveButton)
+    {
+        enableWaves = !enableWaves;
+        if (enableWaves) {
+            enabledWaveButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+            enabledWaveButton->setButtonText(TRANS("Wave Synthesis ON"));
+        } else {
+            enabledWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+            enabledWaveButton->setButtonText(TRANS("Wave Synthesis OFF"));
         }
     }
 }

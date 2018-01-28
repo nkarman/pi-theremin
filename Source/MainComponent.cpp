@@ -95,6 +95,12 @@ public:
             time = 0.0;
         }
         
+        if (!MainGUI.enableWaves) {
+            amplitude = 0.0;
+        } else {
+            amplitude = 0.5;
+        }
+        
         if (MainGUI.currentWave == "sine") {
             // generate sin wave in mono
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {

@@ -45,6 +45,7 @@ public:
     static String currentWave;
     
     bool enableDistortion;
+    bool enableWaves;
     int distortionAlpha;
     
 
@@ -58,6 +59,7 @@ private:
     ScopedPointer<TextButton> minusOctave;
     LookAndFeel_V4 otherLookAndFeel;
     ScopedPointer<TextButton> distortionButton;
+    ScopedPointer<TextButton> enabledWaveButton;
     Slider distortionKnob;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainGUI)
