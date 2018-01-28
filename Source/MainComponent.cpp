@@ -23,9 +23,17 @@ public:
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         
+        waves[0] = { "sine"};
+        waves[1] = {"square"};
+        currentWave = waves[0];
+        enableDistortion = false;
+        distortionAlpha = 1;
+        enableWaves = true;
+        
         addAndMakeVisible(sensor);
         sensor.setText(String(frequency), dontSendNotification);
         sensor.setFont( (Font (20.00f, Font::plain).withTypefaceStyle("Bold")));
+        sensor.setBounds(getWidth() / 2, getHeight() / 3 - 10, 100, 50);
         
         addAndMakeVisible(stateButton);
         stateButton.setBounds(100, 700, 100, 100);
@@ -39,21 +47,23 @@ public:
         freqSlider.addListener(this);
         freqSlider.setSkewFactorFromMidPoint(500);
         
-        waves[0] = { "sine"};
-        waves[1] = {"square"};
-        currentWave = waves[0];
-        enableDistortion = false;
-        distortionAlpha = 1;
-        
         addAndMakeVisible (sineWaveButton);
         sineWaveButton.setButtonText (TRANS("Sine Wave"));
         sineWaveButton.addListener (this);
-        sineWaveButton.setBounds (0, 30, 100, 100);
+        sineWaveButton.setBounds (0, 20, 380, 100);
+        sineWaveButton.setColour(TextButton::buttonColourId, Colour(46, 204, 113));
         
         addAndMakeVisible (squareWaveButton);
         squareWaveButton.setButtonText (TRANS("Square Wave"));
         squareWaveButton.addListener (this);
-        squareWaveButton.setBounds (130, 30, 100, 100);
+        squareWaveButton.setBounds(420, 20, 380, 100);
+        squareWaveButton.setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+        
+        addAndMakeVisible(enabledWaveButton);
+        enabledWaveButton.setButtonText (TRANS("Wave Synthesis ON"));
+        enabledWaveButton.addListener(this);
+        enabledWaveButton.setBounds(375, 5, 50, 20);
+        enabledWaveButton.setColour(TextButton::buttonColourId, Colour(46, 204, 113));
         
         addAndMakeVisible (sensorReading);
         sensorReading.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
@@ -65,18 +75,49 @@ public:
         addAndMakeVisible(distortionButton);
         distortionButton.setButtonText(TRANS("Distort Off"));
         distortionButton.addListener(this);
-        distortionButton.setBounds (200, 180, 100, 100);
+        distortionButton.setBounds(200, 180, 400, 104);
         distortionButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
         
         addAndMakeVisible(distortionKnob);
         distortionKnob.setRange (1, 20, 1);
         distortionKnob.setValue (1);
         distortionKnob.setSliderStyle (Slider::RotaryHorizontalDrag);
+        distortionKnob.setBounds(600, 180, 100, 100);
         distortionKnob.setTextBoxStyle (Slider::TextBoxAbove, false, 80, 20);
-        distortionKnob.setBounds(700, 190, 100, 100);
         distortionKnob.addListener(this);
         
-        setSize (1100, 800);
+        // Phaser
+        addAndMakeVisible(phaserButton);
+        phaserButton.setButtonText(TRANS("Phaser Off"));
+        phaserButton.addListener(this);
+        phaserButton.setBounds(60, 300, 400, 104);
+        phaserButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+        
+        addAndMakeVisible(phaserDepthKnob);
+        phaserDepthKnob.setRange(0,10,1);
+        phaserDepthKnob.setValue(1);
+        phaserDepthKnob.setSliderStyle(Slider::RotaryHorizontalDrag);
+        phaserDepthKnob.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+        phaserDepthKnob.setBounds(460, 310, 100, 100);
+        phaserDepthKnob.addListener(this);
+        
+        addAndMakeVisible(phaserRateKnob);
+        phaserRateKnob.setRange(0,10,1);
+        phaserRateKnob.setValue(1);
+        phaserRateKnob.setSliderStyle(Slider::RotaryHorizontalDrag);
+        phaserRateKnob.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+        phaserRateKnob.setBounds(560, 310, 100, 100);
+        phaserRateKnob.addListener(this);
+        
+        addAndMakeVisible(phaserWet);
+        phaserWet.setRange(0, 100, 5);
+        phaserWet.setValue(100);
+        phaserWet.setSliderStyle(Slider::LinearBar);
+        phaserWet.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
+        phaserWet.setBounds(660, 310, 100, 50);
+        phaserWet.addListener(this);
+        
+        setSize (800, 800);
     }
 
     ~MainContentComponent()
@@ -94,6 +135,12 @@ public:
         }
         if (slider == &distortionKnob) {
             distortionAlpha = (float)distortionKnob.getValue();
+        }
+        if (slider == &phaserDepthKnob) {
+            phaserDepth = (float)phaserDepthKnob.getValue();
+        }
+        if (slider == &phaserRateKnob) {
+            phaserRate = (float)phaserRateKnob.getValue();
         }
     }
     
@@ -132,6 +179,28 @@ public:
             } else {
                 distortionButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
                 distortionButton.setButtonText(TRANS("Distort Off"));
+            }
+        }
+        else if (buttonThatWasClicked == &enabledWaveButton)
+        {
+            enableWaves = !enableWaves;
+            if (enableWaves) {
+                enabledWaveButton.setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+                enabledWaveButton.setButtonText(TRANS("Wave Synthesis ON"));
+            } else {
+                enabledWaveButton.setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+                enabledWaveButton.setButtonText(TRANS("Wave Synthesis OFF"));
+            }
+        }
+        else if (buttonThatWasClicked == &phaserButton)
+        {
+            enablePhaser = !enablePhaser;
+            if(enablePhaser) {
+                phaserButton.setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+                phaserButton.setButtonText(TRANS("Phaser On"));
+            } else {
+                phaserButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+                phaserButton.setButtonText(TRANS("Phaser Off"));
             }
         }
     }
@@ -173,6 +242,12 @@ public:
     
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
+        if (enableWaves) {
+            amplitude = 0.0;
+        } else {
+            amplitude = 0.5;
+        }
+        
         if (state == Instrument)
         {
             float *monoBuffer = new float[bufferToFill.numSamples];
@@ -193,6 +268,9 @@ public:
                     if(enableDistortion) {
                         value = distort(value);
                     }
+                    if(enablePhaser) {
+                        value = phaser(value);
+                    }
                     monoBuffer[sample] = value;
                     time += deltaTime;
                 }
@@ -206,6 +284,9 @@ public:
                     }
                     float value = amplitude * sign(sin(phaseAngle));
                 
+                    if(enablePhaser) {
+                        value = phaser(value);
+                    }
                     monoBuffer[sample] = value;
                     time += deltaTime;
                 }
@@ -252,6 +333,10 @@ public:
         return 2/float_Pi * atan(value * distortionAlpha);
     }
     
+    float phaser(float in) {
+        return in;
+    }
+    
     //==============================================================================
     
 //    void paint (Graphics& g) override
@@ -276,10 +361,15 @@ private:
     TextButton stateButton;
     TextButton sineWaveButton;
     TextButton squareWaveButton;
+    TextButton enabledWaveButton;
     Label note;
     Label sensorReading;
     TextButton distortionButton;
     Slider distortionKnob;
+    TextButton phaserButton;
+    Slider phaserDepthKnob;
+    Slider phaserRateKnob;
+    Slider phaserWet;
 
     float amplitude;
     float frequency;
@@ -291,9 +381,24 @@ private:
     float phaseAngleChange;
     String waves[3];
     String currentWave;
+    bool enableWaves;
+    
+    // Phaser Stuff
+    
+    // Feed Forward Delay Buffer
+    float ff[2] = {0, 0};
+    // Feed Back Delay Buffer
+    float fb[2] = {0, 0};
+    
+    float fbOut = 0.0;
     
     bool enableDistortion;
     int distortionAlpha;
+    
+    bool enablePhaser;
+    float phaserRate;
+    float phaserDepth;
+    float wetPercent;
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {
