@@ -29,7 +29,6 @@ public:
         sensor.setText(String(frequency), dontSendNotification);
         sensor.setFont( (Font (20.00f, Font::plain).withTypefaceStyle("Bold")));
         
-        
         setSize (1100, 800);
         
 
@@ -103,6 +102,10 @@ public:
                     phaseAngle -= (2 * float_Pi);
                 }
                 float value = amplitude * sin(phaseAngle);
+                
+                if(MainGUI.enableDistortion) {
+                    value = distort(value);
+                }
                 monoBuffer[sample] = value;
                 time += deltaTime;
             }
@@ -141,6 +144,9 @@ public:
         Logger::getCurrentLogger()->writeToLog ("Releasing audio resources");
     }
 
+    float distort(float value) {
+        return 2/float_Pi * atan(value * MainGUI.distortionAlpha);
+    }
     //==============================================================================
     
 //    void paint (Graphics& g) override
