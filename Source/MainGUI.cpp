@@ -84,6 +84,7 @@ MainGUI::MainGUI ()
     minusOctave->setButtonText (TRANS("-"));
     minusOctave->addListener (this);
 
+    addAndMakeVisible(harmonizer);
 
     //[UserPreSize]
     //[/UserPreSize]

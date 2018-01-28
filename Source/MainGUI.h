@@ -21,6 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "HarmonizerComponent.h"
 //[/Headers]
 
 
@@ -57,7 +58,8 @@ public:
     
     String waves[3];
     static String currentWave;
-
+    
+    HarmonizerComponent harmonizer;
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
