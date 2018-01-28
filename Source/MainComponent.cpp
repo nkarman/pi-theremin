@@ -5,7 +5,6 @@
 #define phaserlfoshape 4.0
 #define lfoskipsamples 20
 
-
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
@@ -41,6 +40,14 @@ public:
         freqSlider.setValue(440.0);
         freqSlider.addListener(this);
         freqSlider.setSkewFactorFromMidPoint(500);
+        
+        
+        // Clears old Phaser values
+        for (int j = 0; j <stages; j++) {
+            old[j] = 0;
+        }
+        
+        
         
     }
 
@@ -166,48 +173,28 @@ public:
     }
     
     float phaser(float in) {
-//        float phaseTime = sample * Ts;
-//        float depth = MainGUI.phaserDepth;
-//        float wetDryRatio = MainGUI.wetPercent / 100;
-//        float normalizedLfo = (2 * float_Pi)*(depth*sin(2*float_Pi*MainGUI.phaserRate*phaseTime) + 1000) / sampleRate;
-//        // 0.3 is the Q value
-//        float normalizedBandwidth = sin(normalizedLfo)/(2*0.3);
-//        // Buffers for phase
-//        float b0 = 1 - normalizedBandwidth;
-//        float b1 = -2*cosf(normalizedLfo);
-//        float b2 = 1 + normalizedBandwidth;
-//        float a0 = 1 + normalizedBandwidth;
-//        float a1 = -2*cosf(normalizedLfo);
-//        float a2 = 1- normalizedBandwidth;
-//
-//        float phasedSample = ((b0/a0*sample) + (b1/a0*(ff[0])) + (b2/a0)*(ff[1]) - (a1/a0)*(fb[0]) - (a2/a0)*(fb[1]));
-//
-//        phasedSample = (1 - wetDryRatio)*sample + (wetDryRatio*phasedSample);
-//
-//        ff[1] = ff[0];
-//        ff[0] = sample;
-//        fb[1] = fb[0];
-//        fb[0] = phasedSample;
-//        float m, tmp, out;
-//        int j;
-//        m = in + fbout * 5 / 100;
-//        if (((skipcount++) % lfoskipsamples) == 0) {
-//            gain = (1 + cos(skipcount * lfoskip + phase)) / 2;
-//            gain =(exp(gain * phaserlfoshape) - 1) / (exp(phaserlfoshape)-1);
-//            gain = 1 - gain / 255 * depth;
-//        }
-//        for (j = 0; j < stages; j++) {
-//            tmp = old[j];
-//            old[j] = gain * tmp + m;
-//            m = tmp - gain * old[j];
-//        }
-//        fbout = m;
-//        out = (m * drywet + in * (255 - drywet)) / 255;
-//        if (out < -1.0) out = -1.0;
-//        if (out > 1.0) out = 1.0;
-//        return out;
+        float m, tmp, out;
         
-        return phasedSample;
+        
+        int j;
+        m = in + fbOut * 5 / 100;
+        if (((skipCount++) % lfoskipsamples) == 0) {
+            gain = (1 + cos(skipCount * lfoSkip + phase)) / 2;
+            gain =(exp(gain * phaserlfoshape) - 1) / (exp(phaserlfoshape)-1);
+            gain = 1 - gain / 255 * MainGUI.phaserDepth;
+        }
+        for (j = 0; j < stages; j++) {
+            tmp = old[j];
+            old[j] = gain * tmp + m;
+            m = tmp - gain * old[j];
+        }
+        fbOut = m;
+        out = (m * MainGUI.wetPercent + in * (255 - MainGUI.wetPercent)) / 255;
+        if (out < -1.0) out = -1.0;
+        if (out > 1.0) out = 1.0;
+        return out;
+        
+       // return phasedSample;
         
         
         
@@ -251,7 +238,16 @@ private:
     // Feed Back Delay Buffer
     float fb[2] = {0, 0};
     
+    int stages = 10;
     float fbOut = 0.0;
+    unsigned long skipCount = 0;
+    float gain = 0.0;
+    float lfoSkip = 500 * 2 * M_PI / 44100;
+    float startPhase = 30;
+    float phase = startPhase * M_PI / 180;
+    float old[24];
+    
+
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {
