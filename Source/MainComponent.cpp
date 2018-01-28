@@ -1,20 +1,18 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "MainGUI.h"
-
 
 
 class MainContentComponent   : public AudioAppComponent,
                                private OSCReceiver,
                                private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
                                public Slider::Listener,
-                               private Label::Listener
+                               private Label::Listener,
+                               public Button::Listener
 
 {
 public:
-    MainContentComponent()
+    MainContentComponent() : state(Instrument)
     {
-        addAndMakeVisible(MainGUI);
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
         // specify a UDP port to connect to with OSCReceiver
@@ -29,8 +27,10 @@ public:
         sensor.setText(String(frequency), dontSendNotification);
         sensor.setFont( (Font (20.00f, Font::plain).withTypefaceStyle("Bold")));
         
-        setSize (1100, 800);
-        
+        addAndMakeVisible(stateButton);
+        stateButton.setBounds(100, 700, 100, 100);
+        stateButton.setButtonText(TRANS("Switch to FX Controller"));
+        stateButton.addListener(this);
 
         addAndMakeVisible(freqSlider);
         freqSlider.setRange(10, 22000);
@@ -39,6 +39,44 @@ public:
         freqSlider.addListener(this);
         freqSlider.setSkewFactorFromMidPoint(500);
         
+        waves[0] = { "sine"};
+        waves[1] = {"square"};
+        currentWave = waves[0];
+        enableDistortion = false;
+        distortionAlpha = 1;
+        
+        addAndMakeVisible (sineWaveButton);
+        sineWaveButton.setButtonText (TRANS("Sine Wave"));
+        sineWaveButton.addListener (this);
+        sineWaveButton.setBounds (0, 30, 100, 100);
+        
+        addAndMakeVisible (squareWaveButton);
+        squareWaveButton.setButtonText (TRANS("Square Wave"));
+        squareWaveButton.addListener (this);
+        squareWaveButton.setBounds (130, 30, 100, 100);
+        
+        addAndMakeVisible (sensorReading);
+        sensorReading.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        sensorReading.setJustificationType (Justification::centredLeft);
+        sensorReading.setEditable (false, false, false);
+        sensorReading.setColour (TextEditor::textColourId, Colours::black);
+        sensorReading.setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+        
+        addAndMakeVisible(distortionButton);
+        distortionButton.setButtonText(TRANS("Distort Off"));
+        distortionButton.addListener(this);
+        distortionButton.setBounds (200, 180, 100, 100);
+        distortionButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+        
+        addAndMakeVisible(distortionKnob);
+        distortionKnob.setRange (1, 20, 1);
+        distortionKnob.setValue (1);
+        distortionKnob.setSliderStyle (Slider::RotaryHorizontalDrag);
+        distortionKnob.setTextBoxStyle (Slider::TextBoxAbove, false, 80, 20);
+        distortionKnob.setBounds(700, 190, 100, 100);
+        distortionKnob.addListener(this);
+        
+        setSize (1100, 800);
     }
 
     ~MainContentComponent()
@@ -53,9 +91,56 @@ public:
         if (slider == &freqSlider) {
             frequency = (float)freqSlider.getValue();
             phaseAngleChange = frequency * Ts * 2 * float_Pi;
-            
+        }
+        if (slider == &distortionKnob) {
+            distortionAlpha = (float)distortionKnob.getValue();
         }
     }
+    
+    void buttonClicked (Button* buttonThatWasClicked) override
+    {
+        if(buttonThatWasClicked == &stateButton) {
+            switch(state)
+            {
+                case Instrument:
+                    state = FXController;
+                    stateButton.setButtonText("Switch to Instrument");
+                    break;
+                case FXController:
+                    state = Instrument;
+                    stateButton.setButtonText("Switch to FX Controller");
+                    break;
+            }
+        }
+        
+        if (buttonThatWasClicked == &sineWaveButton)
+        {
+            currentWave = waves[0];
+            distortionButton.setEnabled(true);
+        }
+        else if (buttonThatWasClicked == &squareWaveButton)
+        {
+            currentWave = waves[1];
+            distortionButton.setEnabled(false);
+        }
+        else if (buttonThatWasClicked == &distortionButton)
+        {
+            enableDistortion = !enableDistortion;
+            if(enableDistortion) {
+                distortionButton.setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+                distortionButton.setButtonText(TRANS("Distort On"));
+            } else {
+                distortionButton.setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+                distortionButton.setButtonText(TRANS("Distort Off"));
+            }
+        }
+    }
+    
+    enum AppState
+    {
+        Instrument,
+        FXController
+    };
     
     int sign(double value) { return (value >= 0.0) ? 1 : -1; }
     
@@ -71,7 +156,7 @@ public:
         
         
         String message;
-        message << "Preparing to play audio..." + MainGUI.currentWave << newLine;
+        message << "Preparing to play audio..." + currentWave << newLine;
         message << " samplesPerBlockExpected = " << samplesPerBlockExpected << newLine;
         message << " sampleRate = " << thisSampleRate;
         Logger::getCurrentLogger()->writeToLog (message);
@@ -88,54 +173,73 @@ public:
     
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
-        float *monoBuffer = new float[bufferToFill.numSamples];
+        if (state == Instrument)
+        {
+            float *monoBuffer = new float[bufferToFill.numSamples];
         
-        if (time >= std::numeric_limits<float>::max()) {
-            time = 0.0;
-        }
-        
-        if (MainGUI.currentWave == "sine") {
-            // generate sin wave in mono
-            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                phaseAngle += phaseAngleChange;
-                if (phaseAngle > (2 * float_Pi)) {
-                    phaseAngle -= (2 * float_Pi);
-                }
-                float value = amplitude * sin(phaseAngle);
-                
-                if(MainGUI.enableDistortion) {
-                    value = distort(value);
-                }
-                monoBuffer[sample] = value;
-                time += deltaTime;
+            if (time >= std::numeric_limits<float>::max()) {
+                time = 0.0;
             }
+        
+            if (currentWave == "sine") {
+                // generate sin wave in mono
+                for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+                    phaseAngle += phaseAngleChange;
+                    if (phaseAngle > (2 * float_Pi)) {
+                        phaseAngle -= (2 * float_Pi);
+                    }
+                    float value = amplitude * sin(phaseAngle);
+                
+                    if(enableDistortion) {
+                        value = distort(value);
+                    }
+                    monoBuffer[sample] = value;
+                    time += deltaTime;
+                }
             
-        } else if (MainGUI.currentWave == "square") {
-            // generate square wave in mono
-            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                phaseAngle += phaseAngleChange;
-                if (phaseAngle > (2 * float_Pi)) {
-                    phaseAngle -= (2 * float_Pi);
-                }
-                float value = amplitude * sign(sin(phaseAngle));
+            } else if (currentWave == "square") {
+                // generate square wave in mono
+                for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+                    phaseAngle += phaseAngleChange;
+                    if (phaseAngle > (2 * float_Pi)) {
+                        phaseAngle -= (2 * float_Pi);
+                    }
+                    float value = amplitude * sign(sin(phaseAngle));
                 
-                monoBuffer[sample] = value;
-                time += deltaTime;
+                    monoBuffer[sample] = value;
+                    time += deltaTime;
+                }
             }
-        }
 
         
-        // iterate over all available output channels
-        for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
-        {
+            // iterate over all available output channels
+            for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
+            {
             // Get a pointer to the start sample in the buffer for this audio output channel
-            float* const buffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
+                float* const buffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
             
-            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                buffer[sample] = monoBuffer[sample];
+                for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+                    buffer[sample] = monoBuffer[sample];
+                }
             }
         }
-        
+        else if (state == FXController) {
+            AudioIODevice* device = deviceManager.getCurrentAudioDevice();
+            const BigInteger activeInputChannels = device->getActiveInputChannels();
+            const BigInteger activeOutputChannels = device->getActiveOutputChannels();
+            const int maxOutputChannels = activeOutputChannels.getHighestBit() + 1;
+            
+            const float level = amplitude;
+            
+            for (int channel = 0; channel < maxOutputChannels; ++channel)
+            {
+                const float* inBuffer = bufferToFill.buffer->getReadPointer (1, bufferToFill.startSample);
+                float* outBuffer = bufferToFill.buffer->getWritePointer (channel, bufferToFill.startSample);
+                        
+                for (int sample = 0; sample < bufferToFill.numSamples; ++sample)
+                    outBuffer[sample] = distort(inBuffer[sample]) * level;
+            }
+        }
     }
     
     void releaseResources() override
@@ -145,8 +249,9 @@ public:
     }
 
     float distort(float value) {
-        return 2/float_Pi * atan(value * MainGUI.distortionAlpha);
+        return 2/float_Pi * atan(value * distortionAlpha);
     }
+    
     //==============================================================================
     
 //    void paint (Graphics& g) override
@@ -167,7 +272,14 @@ public:
 private:
     Slider freqSlider;
     Label sensor;
-    MainGUI MainGUI;
+    AppState state;
+    TextButton stateButton;
+    TextButton sineWaveButton;
+    TextButton squareWaveButton;
+    Label note;
+    Label sensorReading;
+    TextButton distortionButton;
+    Slider distortionKnob;
 
     float amplitude;
     float frequency;
@@ -177,6 +289,11 @@ private:
     float Ts;
     float sampleRate;
     float phaseAngleChange;
+    String waves[3];
+    String currentWave;
+    
+    bool enableDistortion;
+    int distortionAlpha;
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {

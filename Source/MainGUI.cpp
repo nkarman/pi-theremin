@@ -5,45 +5,7 @@ String MainGUI::currentWave;
 
 MainGUI::MainGUI ()
 {
-    waves[0] = { "sine"};
-    waves[1] = {"square"};
-    currentWave = waves[0];
-    enableDistortion = false;
-    distortionAlpha = 1;
     
-    addAndMakeVisible (sineWaveButton = new TextButton("sineWaveButton"));
-    sineWaveButton->setButtonText (TRANS("Sine Wave"));
-    sineWaveButton->addListener (this);
-    sineWaveButton->setBounds (0, 30, (getWidth() / 2), 104);
-
-    addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
-    squareWaveButton->setButtonText (TRANS("Square Wave"));
-    squareWaveButton->addListener (this);
-    squareWaveButton->setBounds (130, 30, (getWidth() / 2), 104);
-
-    addAndMakeVisible (sensorReading = new Label ("sensorReading",
-                                                  TRANS("sensor reading\n")));
-    sensorReading->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    sensorReading->setJustificationType (Justification::centredLeft);
-    sensorReading->setEditable (false, false, false);
-    sensorReading->setColour (TextEditor::textColourId, Colours::black);
-    sensorReading->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    
-    addAndMakeVisible(distortionButton = new TextButton("distortionButton"));
-    distortionButton->setButtonText(TRANS("Distort Off"));
-    distortionButton->addListener(this);
-    distortionButton->setBounds (200, 180, 50, 50);
-    distortionButton->setColour(TextButton::buttonColourId, Colour(192, 57, 43));
-    
-    addAndMakeVisible(distortionKnob);
-    distortionKnob.setRange (1, 20, 1);
-    distortionKnob.setValue (1);
-    distortionKnob.setSliderStyle (Slider::RotaryHorizontalDrag);
-    distortionKnob.setTextBoxStyle (Slider::TextBoxAbove, false, 80, 20);
-    distortionKnob.setBounds(700, 190, 100, 100);
-    distortionKnob.addListener(this);
-    setSize (800, 800);
-
 
 }
 
@@ -71,34 +33,12 @@ void MainGUI::resized()
 
 void MainGUI::buttonClicked (Button* buttonThatWasClicked)
 {
-    if (buttonThatWasClicked == sineWaveButton)
-    {
-        currentWave = waves[0];
-        distortionButton->setEnabled(true);
-    }
-    else if (buttonThatWasClicked == squareWaveButton)
-    {
-        currentWave = waves[1];
-        distortionButton->setEnabled(false);
-    }
-    else if (buttonThatWasClicked == distortionButton)
-    {
-        enableDistortion = !enableDistortion;
-        if(enableDistortion) {
-            distortionButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
-            distortionButton->setButtonText(TRANS("Distort On"));
-        } else {
-            distortionButton->setColour(TextButton::buttonColourId, Colour(192, 57, 43));
-            distortionButton->setButtonText(TRANS("Distort Off"));
-        }
-    }
+    
 }
 
 void MainGUI::sliderValueChanged(Slider* slider)
 {
-    if (slider == &distortionKnob) {
-        distortionAlpha = (float)distortionKnob.getValue();
-    }
+    
 }
 
 
