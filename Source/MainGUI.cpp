@@ -14,12 +14,14 @@ MainGUI::MainGUI ()
     addAndMakeVisible (sineWaveButton = new TextButton("sineWaveButton"));
     sineWaveButton->setButtonText (TRANS("Sine Wave"));
     sineWaveButton->addListener (this);
-    sineWaveButton->setBounds (0, 30, (getWidth() / 2), 104);
+    sineWaveButton->setBounds (30, 30, (getWidth() / 2), 104);
+    sineWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
 
     addAndMakeVisible (squareWaveButton = new TextButton ("squareWaveButton"));
     squareWaveButton->setButtonText (TRANS("Square Wave"));
     squareWaveButton->addListener (this);
     squareWaveButton->setBounds (130, 30, (getWidth() / 2), 104);
+    squareWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
 
     addAndMakeVisible (sensorReading = new Label ("sensorReading",
                                                   TRANS("sensor reading\n")));
@@ -64,8 +66,8 @@ void MainGUI::paint (Graphics& g)
 
 void MainGUI::resized()
 {
-    sineWaveButton->setBounds (0, 30, 100, 104);
-    squareWaveButton->setBounds (130, 30, 100, 104);
+    sineWaveButton->setBounds (60, 30, getWidth() / 2.5, 104);
+    squareWaveButton->setBounds (getWidth() / 2 + 20, 30, getWidth() / 2.5, 104);
     distortionButton->setBounds(200, 180, 400, 104);
 }
 
@@ -75,11 +77,20 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
     {
         currentWave = waves[0];
         distortionButton->setEnabled(true);
+        if (currentWave ==  waves[0]) {
+            sineWaveButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+            squareWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+        }
     }
     else if (buttonThatWasClicked == squareWaveButton)
     {
         currentWave = waves[1];
         distortionButton->setEnabled(false);
+        if (currentWave == waves[1]) {
+            squareWaveButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
+            sineWaveButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
+            distortionButton->setButtonText(TRANS("Distort Off"));
+        }
     }
     else if (buttonThatWasClicked == distortionButton)
     {
@@ -88,7 +99,7 @@ void MainGUI::buttonClicked (Button* buttonThatWasClicked)
             distortionButton->setColour(TextButton::buttonColourId, Colour(46, 204, 113));
             distortionButton->setButtonText(TRANS("Distort On"));
         } else {
-            distortionButton->setColour(TextButton::buttonColourId, Colour(192, 57, 43));
+            distortionButton->setColour(TextButton::buttonColourId, Colour(72, 156, 229));
             distortionButton->setButtonText(TRANS("Distort Off"));
         }
     }

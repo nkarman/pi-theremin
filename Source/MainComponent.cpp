@@ -26,16 +26,17 @@ public:
         setAudioChannels (2, 2);
         
         addAndMakeVisible(sensor);
-        sensor.setText(String(frequency), dontSendNotification);
+        sensor.setText(String(frequency) += " Hz", dontSendNotification);
         sensor.setFont( (Font (20.00f, Font::plain).withTypefaceStyle("Bold")));
+        sensor.setBounds(getWidth() / 2, getHeight() / 3 - 10, 100, 50);
         
-        setSize (1100, 800);
+        setSize (800, 800);
         
 
         addAndMakeVisible(freqSlider);
         freqSlider.setRange(10, 22000);
         freqSlider.setTextValueSuffix(" Hz");
-        freqSlider.setValue(220.0);
+        freqSlider.setValue(440.0);
         freqSlider.addListener(this);
         freqSlider.setSkewFactorFromMidPoint(500);
         
@@ -77,7 +78,7 @@ public:
         Logger::getCurrentLogger()->writeToLog (message);
         
         amplitude = 0.5;
-        frequency = 220;
+        frequency = 440;
         phaseAngle = 0.0;
         time = 0.0;
         deltaTime = 1/thisSampleRate;
@@ -182,7 +183,9 @@ private:
         if (message.size() == 1 && message[0].isFloat32()) {
             // Message logic here
             float value = message[0].getFloat32();
-            float noteValue = round((220 * (pow(1.059463, value))) * 10) / 10;
+            float noteValue = round((440 * (pow(1.059463, value))) * 10) / 10;
+            String valueString = String(noteValue) += " Hz";
+            sensor.setText(valueString, dontSendNotification);
             freqSlider.setValue(noteValue);
         }
     }
