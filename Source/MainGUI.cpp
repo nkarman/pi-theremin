@@ -77,7 +77,7 @@ MainGUI::MainGUI ()
 
     addAndMakeVisible(phaserWet);
     phaserWet.setRange(0, 100, 5);
-    phaserWet.setValue(50);
+    phaserWet.setValue(100);
     phaserWet.setSliderStyle(Slider::LinearBar);
     phaserWet.setTextBoxStyle(Slider::TextBoxAbove, false, 80, 20);
     phaserWet.setBounds(700, 310, 100, 50);

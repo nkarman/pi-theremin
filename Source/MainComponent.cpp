@@ -2,6 +2,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MainGUI.h"
 
+#define phaserlfoshape 4.0
+#define lfoskipsamples 20
 
 
 class MainContentComponent   : public AudioAppComponent,
@@ -113,6 +115,10 @@ public:
                 if(MainGUI.enableDistortion) {
                     value = distort(value);
                 }
+                
+                if(MainGUI.enablePhaser) {
+                    value = phaser(value);
+                }
                 monoBuffer[sample] = value;
                 time += deltaTime;
             }
@@ -125,6 +131,10 @@ public:
                     phaseAngle -= (2 * float_Pi);
                 }
                 float value = amplitude * sign(sin(phaseAngle));
+                
+                if(MainGUI.enablePhaser) {
+                    value = phaser(value);
+                }
                 
                 monoBuffer[sample] = value;
                 time += deltaTime;
@@ -154,7 +164,55 @@ public:
     float distort(float value) {
         return 2/float_Pi * atan(value * MainGUI.distortionAlpha);
     }
-    //==============================================================================
+    
+    float phaser(float in) {
+//        float phaseTime = sample * Ts;
+//        float depth = MainGUI.phaserDepth;
+//        float wetDryRatio = MainGUI.wetPercent / 100;
+//        float normalizedLfo = (2 * float_Pi)*(depth*sin(2*float_Pi*MainGUI.phaserRate*phaseTime) + 1000) / sampleRate;
+//        // 0.3 is the Q value
+//        float normalizedBandwidth = sin(normalizedLfo)/(2*0.3);
+//        // Buffers for phase
+//        float b0 = 1 - normalizedBandwidth;
+//        float b1 = -2*cosf(normalizedLfo);
+//        float b2 = 1 + normalizedBandwidth;
+//        float a0 = 1 + normalizedBandwidth;
+//        float a1 = -2*cosf(normalizedLfo);
+//        float a2 = 1- normalizedBandwidth;
+//
+//        float phasedSample = ((b0/a0*sample) + (b1/a0*(ff[0])) + (b2/a0)*(ff[1]) - (a1/a0)*(fb[0]) - (a2/a0)*(fb[1]));
+//
+//        phasedSample = (1 - wetDryRatio)*sample + (wetDryRatio*phasedSample);
+//
+//        ff[1] = ff[0];
+//        ff[0] = sample;
+//        fb[1] = fb[0];
+//        fb[0] = phasedSample;
+//        float m, tmp, out;
+//        int j;
+//        m = in + fbout * 5 / 100;
+//        if (((skipcount++) % lfoskipsamples) == 0) {
+//            gain = (1 + cos(skipcount * lfoskip + phase)) / 2;
+//            gain =(exp(gain * phaserlfoshape) - 1) / (exp(phaserlfoshape)-1);
+//            gain = 1 - gain / 255 * depth;
+//        }
+//        for (j = 0; j < stages; j++) {
+//            tmp = old[j];
+//            old[j] = gain * tmp + m;
+//            m = tmp - gain * old[j];
+//        }
+//        fbout = m;
+//        out = (m * drywet + in * (255 - drywet)) / 255;
+//        if (out < -1.0) out = -1.0;
+//        if (out > 1.0) out = 1.0;
+//        return out;
+        
+        return phasedSample;
+        
+        
+        
+    }
+
     
 //    void paint (Graphics& g) override
 //    {
@@ -184,6 +242,16 @@ private:
     float Ts;
     float sampleRate;
     float phaseAngleChange;
+    
+    
+    // Phaser Stuff
+    
+    // Feed Forward Delay Buffer
+    float ff[2] = {0, 0};
+    // Feed Back Delay Buffer
+    float fb[2] = {0, 0};
+    
+    float fbOut = 0.0;
     
     void oscMessageReceived (const OSCMessage& message) override {
         if (message.size() == 1 && message[0].isFloat32()) {
